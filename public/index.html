@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tic Tac Toe by Command Line Games, Inc.</title>
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.js"></script>
+  <script src="index.js" defer></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+  <div id="vue-app">
+
+    <router-view></router-view>
+
+  </div>
+</body>
+</html>
+
+<template id="home-page">
+  <div class="vue-component">
+    <!-- Game Type Modal -->
+    <div id="modal" class="modal" v-if="!gameType">
+      <div class="modal-content">
+        <h2>Welcome to Tic Tac Toe!</h2>
+        <h3>Please choose from the options below...</h3>
+        <label for="game-type">Game Type:</label>
+        <select name="game-type" v-model="gameType">
+          <option value="">Choose one...</option>
+          <option value="hvh">Human vs. Human</option>
+          <option value="hvc">Human vs. Computer</option>
+          <option value="cvc">Computer vs. Computer</option>
+        </select>
+      </div>
+    </div>
+    <!-- End of Modal -->
+
+    <!-- Diffictulty Level Modal -->
+    <div id="modal" class="modal" v-if="gameType !== 'hvh' && gameType && !difficultyLevel">
+      <div class="modal-content">
+        <h2>Please Choose a Difficulty Level</h2>
+        <h3>Choose from the options below...</h3>
+        <label for="difficulty-level">Difficulty Level:</label>
+        <select name="difficulty-level" v-model="difficultyLevel">
+          <option value="">Choose one...</option>
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
+      </div>
+    </div>
+    <!-- End of Modal -->
+
+    <!-- Names Modal -->
+    <div id="modal" class="modal" v-if="(gameType === 'hvh' || (gameType === 'hvc' && difficultyLevel)) && !names">
+      <div class="modal-content">
+        <h2>Please Enter Name(s)</h2>
+        <h3>Choose from the options below...</h3>
+        <label for="player1Name">Player 1 Name:</label>
+        <input name="player1Name" type="text" v-model="player1Name">
+        <br><br>
+        <label for="player2Name" v-if="gameType === 'hvh'">Player 2 Name:</label>
+        <input name="player2Name" type="text" v-model="player2Name" v-if="gameType === 'hvh'">
+        <span v-if="gameType === 'hvh'"><br><br></span>
+        <button @click="namesToggle()" style="margin: auto">Submit</button>
+      </div>
+    </div>
+    <!-- End of Modal -->
+
+    <!-- Choose Symbol Modal -->
+    <div id="modal" class="modal" v-if="(gameType && difficultyLevel && names && !player1Symbol) || (gameType === 'cvc' && difficultyLevel && !player1Symbol) || (gameType === 'hvh' && names && !player1Symbol)">
+      <div class="modal-content">
+        <h2>Please Choose Symbol for {{player1Name}}</h2>
+        <h3>Choose from the options below...</h3>
+        <label for="symbol">{{player1Name}}'s Symbol:</label>
+        <select name="symbol" v-model="player1Symbol">
+          <option value="">Choose one...</option>
+          <option value="X">X</option>
+          <option value="O">O</option>
+        </select>
+      </div>
+    </div>
+    <!-- End of Modal -->
+
+    <h1>Welcome to Tic Tac Toe by Command Line Games, Inc!</h1>
+
+    <div>
+      <p class="message">{{computerResponse}}</p>
+      <p class="message">{{message}}</p>
+    </div>
+
+    <table>
+      <tr>
+        <td class="top left" @click="chooseTopLeft()">
+          <img src="img/X.png" v-if="topLeft === 'X'">
+          <img src="img/O.png" v-if="topLeft === 'O'">
+        </td>
+        <td class="top" @click="chooseTopCenter()">
+          <img src="img/X.png" v-if="topCenter === 'X'">
+          <img src="img/O.png" v-if="topCenter === 'O'">
+        </td>
+        <td class="top right" @click="chooseTopRight()">
+          <img src="img/X.png" v-if="topRight === 'X'">
+          <img src="img/O.png" v-if="topRight === 'O'">
+        </td>
+      </tr>
+      <tr>
+        <td class="left" @click="chooseMiddleLeft()">
+          <img src="img/X.png" v-if="middleLeft === 'X'">
+          <img src="img/O.png" v-if="middleLeft === 'O'">
+        </td>
+        <td @click="chooseCenter()">
+          <img src="img/X.png" v-if="center === 'X'">
+          <img src="img/O.png" v-if="center === 'O'">
+        </td>
+        <td class="right" @click="chooseMiddleRight()">
+          <img src="img/X.png" v-if="middleRight === 'X'">
+          <img src="img/O.png" v-if="middleRight === 'O'">
+        </td>
+      </tr>
+      <tr>
+        <td class="bottom left" @click="chooseBottomLeft()">
+          <img src="img/X.png" v-if="bottomLeft === 'X'">
+          <img src="img/O.png" v-if="bottomLeft === 'O'">
+        </td>
+        <td class="bottom" @click="chooseBottomCenter()">
+          <img src="img/X.png" v-if="bottomCenter === 'X'">
+          <img src="img/O.png" v-if="bottomCenter === 'O'">
+        </td>
+        <td class="bottom right" @click="chooseBottomRight()">
+          <img src="img/X.png" v-if="bottomRight === 'X'">
+          <img src="img/O.png" v-if="bottomRight === 'O'">
+        </td>
+      </tr>
+    </table>
+
+  </div>
+</template>
