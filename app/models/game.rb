@@ -1,41 +1,36 @@
 class Game < ApplicationRecord
- 
-  def player_setup(game_type)
-    if game_type == 1
-      self.player_1 = Human.new
-      self.player_2 = Human.new
-    elsif game_type == 2
-      self.player_1 = Human.new
-      self.player_2 = Computer.new
-    elsif game_type == 3
-      self.player_1 = Computer.new
-      self.player_2 = Computer.new
-    end
+  has_many :humen
+  has_many :computers
+  belongs_to :board, optional: true
+
+  def setup(params)
+    self.game_type = params[:game_type]
+    self.difficulty_level = params[:level]
+    self.board_id = params[:board_id]
   end
 
-  def set_difficulty_level(level)
-    if level == 1
-      self.difficulty_level = "Easy"
-    elsif level == 2
-      self.difficulty_level = "Medium"
-    elsif level == 3
-      self.difficulty_level = "Hard"
-    end
-  end
-
-  def name_players(names)
-    self.player_1.name = names[0]
-    self.player_2.name = names[1]
-  end
-
-  def set_symbols(who_is_x)
-    if who_is_x == player_1
-      self.player_1.symbol = "X"
-      self.player_2.symbol = "O"
+  def player_setup(player1, player2, names, who_is_x)
+    @player1 = player1
+    @player2 = player2
+    self.player1.game_id = self.id
+    self.player2.game_id = self.id
+    if who_is_x == 'player1'
+      player1.symbol = "X"
+      player2.symbol = "O"
     else
-      self.player_1.symbol = "O"
-      self.player_2.symbol = "X"
+      player1.symbol = "O"
+      player2.symbol = "X"
     end
+    self.player1.name = names[0]
+    self.player2.name = names[1]
+  end
+
+  def player1
+    @player1
+  end
+
+  def player2
+    @player2
   end
 
   def get_score(board, depth)
@@ -133,6 +128,18 @@ class Game < ApplicationRecord
     else
       return "It was a tie! Play again!"
     end
+  end
+
+  def as_json
+    {
+      id: id,
+      created_at: created_at,
+      board_id: board_id,
+      game_type: game_type,
+      difficulty_level: difficulty_level,
+      player1: player1,
+      player2: player2
+    }
   end
 
 end

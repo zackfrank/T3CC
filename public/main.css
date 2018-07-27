@@ -20,6 +20,10 @@
     width: 40%; /* Could be more or less, depending on screen size */
 }
 
+#centered-modal {
+  text-align: center;
+}
+
 h1 {
   text-align: center;
   margin-top: 50px;

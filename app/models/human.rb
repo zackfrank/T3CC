@@ -1,15 +1,13 @@
 class Human < ApplicationRecord
- 
-  def initialize
-    @hum
-  end
+  belongs_to :game
+  validates :game, presence: false
 
   def set_symbol(symbol)
-    @hum = symbol
+    self.symbol = symbol
   end
 
   def make_move
-    @hum
+    self.symbol
   end
-  
+
 end

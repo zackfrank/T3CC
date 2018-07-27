@@ -27,7 +27,7 @@
         <h2>Welcome to Tic Tac Toe!</h2>
         <h3>Please choose from the options below...</h3>
         <label for="game-type">Game Type:</label>
-        <select name="game-type" v-model="gameType">
+        <select name="game-type" v-model="gameType" v-on:change="computerNames()">
           <option value="">Choose one...</option>
           <option value="hvh">Human vs. Human</option>
           <option value="hvc">Human vs. Computer</option>
@@ -57,29 +57,65 @@
     <div id="modal" class="modal" v-if="(gameType === 'hvh' || (gameType === 'hvc' && difficultyLevel)) && !names">
       <div class="modal-content">
         <h2>Please Enter Name(s)</h2>
-        <h3>Choose from the options below...</h3>
-        <label for="player1Name">Player 1 Name:</label>
-        <input name="player1Name" type="text" v-model="player1Name">
+        <label for="player1name">Player 1 Name:</label>
+        <input name="player1name" type="text" v-model="player1.name">
         <br><br>
-        <label for="player2Name" v-if="gameType === 'hvh'">Player 2 Name:</label>
-        <input name="player2Name" type="text" v-model="player2Name" v-if="gameType === 'hvh'">
+        <label for="player2name" v-if="gameType === 'hvh'">Player 2 Name:</label>
+        <input name="player2name" type="text" v-model="player2.name" v-if="gameType === 'hvh'">
         <span v-if="gameType === 'hvh'"><br><br></span>
-        <button @click="namesToggle()" style="margin: auto">Submit</button>
+        <p v-if="nameErrorMessage" style="color: red; margin-top: 0px;">{{nameErrorMessage}}</p>
+        <button @click="submitNames()" style="margin: auto">Submit</button>
       </div>
     </div>
     <!-- End of Modal -->
 
     <!-- Choose Symbol Modal -->
-    <div id="modal" class="modal" v-if="(gameType && difficultyLevel && names && !player1Symbol) || (gameType === 'cvc' && difficultyLevel && !player1Symbol) || (gameType === 'hvh' && names && !player1Symbol)">
+    <div id="modal" class="modal" v-if="(gameType && difficultyLevel && names && !player1.symbol) || (gameType === 'cvc' && difficultyLevel && !player1.symbol) || (gameType === 'hvh' && names && !player1.symbol)">
       <div class="modal-content">
-        <h2>Please Choose Symbol for {{player1Name}}</h2>
+        <h2>Please Choose Symbol for {{player1.name}}</h2>
         <h3>Choose from the options below...</h3>
-        <label for="symbol">{{player1Name}}'s Symbol:</label>
-        <select name="symbol" v-model="player1Symbol">
+        <label for="symbol">{{player1.name}}'s Symbol:</label>
+        <select name="symbol" v-model="player1.symbol">
           <option value="">Choose one...</option>
           <option value="X">X</option>
           <option value="O">O</option>
         </select>
+      </div>
+    </div>
+    <!-- End of Modal -->
+
+    <!-- Who Goes First Modal -->
+    <div id="modal" class="modal" v-if="names && player1.name && !first && player1.symbol">
+      <div class="modal-content">
+        <h2>Please Choose Who Goes First</h2>
+        <h3>Choose from the options below...</h3>
+        <label for="first">Who will go first:</label>
+        <select name="first" v-model="first">
+          <option value="">Choose one...</option>
+          <option :value="player1.name">{{player1.name}}</option>
+          <option :value="player2.name">{{player2.name}}</option>
+        </select>
+      </div>
+    </div>
+    <!-- End of Modal -->
+
+    <!-- Start Game Modal -->
+    <div id="modal" class="modal" v-if="first && !start">
+      <div class="modal-content" id="centered-modal">
+        <h2>Ready to play?</h2>
+        <h3>Here we go...</h3>
+        <p>{{first}} goes first</p>
+        <button @click="startGame()">START</button>
+      </div>
+    </div>
+    <!-- End of Modal -->
+
+    <!-- Winner Modal -->
+    <div id="modal" class="modal" v-if="winner">
+      <div class="modal-content" id="centered-modal">
+        <h2>*** We Have a Winner! ***</h2>
+        <h3>Congratulations {{winner}}</h3>
+        <button @click="playAgain()">Play Again!</button>
       </div>
     </div>
     <!-- End of Modal -->

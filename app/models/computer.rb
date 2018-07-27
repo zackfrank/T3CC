@@ -1,15 +1,25 @@
 class Computer < ApplicationRecord
+  belongs_to :game
+  validates :game, presence: false
  
-  def initialize
-    @com
-  end
-
   def set_symbol(symbol)
-    @com = symbol
+    self.symbol = symbol
   end
 
   def make_move
-    @com
+    self.symbol
+  end
+
+  def difficulty_level
+    # find game and then find diff level
+  end
+
+  def board
+    # find board
+  end
+
+  def current_player
+    # find current player
   end
 
   def responses
