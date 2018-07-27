@@ -22,7 +22,6 @@ var HomePage = {
       start: false,
       computerResponse: "",
       message: "",
-      currentPlayer: "",
       topLeft: "",
       topCenter: "",
       topRight: "",
@@ -99,49 +98,85 @@ var HomePage = {
       );
     },
     chooseTopLeft: function() {
-      this.topLeft = this.currentPlayer.symbol;
-      this.nextPlayer();
-      this.message = this.currentPlayer.name + "'s turn!";
+      if (this.topLeft === "") {
+        this.topLeft = this.currentPlayer.symbol;
+        this.nextPlayer();
+        this.message = this.currentPlayer.name + "'s turn!";
+      } else {
+        this.message = "That spot has already been taken, please choose a valid spot.";
+      }
     },
     chooseTopCenter: function() {
-      this.topCenter = this.currentPlayer.symbol;
-      this.nextPlayer();
-      this.message = this.currentPlayer.name + "'s turn!";
+      if (this.topCenter === "") {
+        this.topCenter = this.currentPlayer.symbol;
+        this.nextPlayer();
+        this.message = this.currentPlayer.name + "'s turn!";
+      } else {
+        this.message = "That spot has already been taken, please choose a valid spot.";
+      }
     },
     chooseTopRight: function() {
-      this.topRight = this.currentPlayer.symbol;
-      this.nextPlayer();
-      this.message = this.currentPlayer.name + "'s turn!";
+      if (this.topRight === "") {
+        this.topRight = this.currentPlayer.symbol;
+        this.nextPlayer();
+        this.message = this.currentPlayer.name + "'s turn!";
+      } else {
+        this.message = "That spot has already been taken, please choose a valid spot.";
+      }
     },
     chooseMiddleLeft: function() {
-      this.middleLeft = this.currentPlayer.symbol;
-      this.nextPlayer();
-      this.message = this.currentPlayer.name + "'s turn!";
+      if (this.middleLeft === "") {
+        this.middleLeft = this.currentPlayer.symbol;
+        this.nextPlayer();
+        this.message = this.currentPlayer.name + "'s turn!";
+      } else {
+        this.message = "That spot has already been taken, please choose a valid spot.";
+      }
     },
     chooseCenter: function() {
-      this.center = this.currentPlayer.symbol;
-      this.nextPlayer();
-      this.message = this.currentPlayer.name + "'s turn!";
+      if (this.center === "") {
+        this.center = this.currentPlayer.symbol;
+        this.nextPlayer();
+        this.message = this.currentPlayer.name + "'s turn!";
+      } else {
+        this.message = "That spot has already been taken, please choose a valid spot.";
+      }
     },
     chooseMiddleRight: function() {
-      this.middleRight = this.currentPlayer.symbol;
-      this.nextPlayer();
-      this.message = this.currentPlayer.name + "'s turn!";
+      if (this.middleRight === "") {
+        this.middleRight = this.currentPlayer.symbol;
+        this.nextPlayer();
+        this.message = this.currentPlayer.name + "'s turn!";
+      } else {
+        this.message = "That spot has already been taken, please choose a valid spot.";
+      }
     },
     chooseBottomLeft: function() {
-      this.bottomLeft = this.currentPlayer.symbol;
-      this.nextPlayer();
-      this.message = this.currentPlayer.name + "'s turn!";
+      if (this.bottomLeft === "") {
+        this.bottomLeft = this.currentPlayer.symbol;
+        this.nextPlayer();
+        this.message = this.currentPlayer.name + "'s turn!";
+      } else {
+        this.message = "That spot has already been taken, please choose a valid spot.";
+      }
     },
     chooseBottomCenter: function() {
-      this.bottomCenter = this.currentPlayer.symbol;
-      this.nextPlayer();
-      this.message = this.currentPlayer.name + "'s turn!";
+      if (this.bottomCenter === "") {
+        this.bottomCenter = this.currentPlayer.symbol;
+        this.nextPlayer();
+        this.message = this.currentPlayer.name + "'s turn!";
+      } else {
+        this.message = "That spot has already been taken, please choose a valid spot.";
+      }
     },
     chooseBottomRight: function() {
-      this.bottomRight = this.currentPlayer.symbol;
-      this.nextPlayer();
-      this.message = this.currentPlayer.name + "'s turn!";
+      if (this.bottomRight === "") {
+        this.bottomRight = this.currentPlayer.symbol;
+        this.nextPlayer();
+        this.message = this.currentPlayer.name + "'s turn!";
+      } else {
+        this.message = "That spot has already been taken, please choose a valid spot.";
+      }
     },
     nextPlayer: function() {
       if (this.currentPlayer === this.player1) {
@@ -155,29 +190,6 @@ var HomePage = {
     playAgain: function() {
       location.reload();
     }
-    // chooseSpot: function(spot, desc, player) {
-    //   console.log(desc, "spot has been selected.");
-    //   if (player === this.currentPlayer) {
-    //     this.board.spaces[0] = this.player1Symbol;
-    //     console.log("Spaces:", this.board.spaces);
-    //     this.topLeft = !this.desc;
-    //     console.log(this.topLeft);
-    //   }
-    // }
-    // chooseSpot(spot) {
-    //   var board = this.board;
-    //   board.spaces[spot] = 'X';
-    //   console.log(board.spaces);
-    //   var params = {
-    //     spaces: board.spaces
-    //   };
-    //   axios.patch("v1/boards/" + board.id, params).then(
-    //     function(response) {
-    //       this.board = response.data;
-    //       console.log(this.board);
-    //     }.bind(this)
-    //   );
-    // }
   },
   computed: {}
 };
