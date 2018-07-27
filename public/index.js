@@ -15,13 +15,10 @@ var HomePage = {
         name: "",
         symbol: ""
       },
-      // player1Name: "",
-      // player2Name: "",
+      currentPlayer: {},
       nameErrorMessage: null,
       names: false,
       first: false,
-      // player1Symbol: "",
-      // player2Symbol: "",
       start: false,
       computerResponse: "",
       message: "",
@@ -90,40 +87,70 @@ var HomePage = {
       axios.post("v1/games", params).then(
         function(response) {
           this.start = true;
-          console.log(response.data);
           this.player1 = response.data.player1;
           this.player2 = response.data.player2;
-          console.log("Player 1:", this.player1);
-          console.log("Player 2:", this.player2);
+          this.message = this.first + ", make your first move!";
+          if (this.first === this.player1.name) {
+            this.currentPlayer = this.player1;
+          } else {
+            this.currentPlayer = this.player2;
+          }
         }.bind(this)
       );
     },
     chooseTopLeft: function() {
-      this.topLeft = this.player1.symbol;
+      this.topLeft = this.currentPlayer.symbol;
+      this.nextPlayer();
+      this.message = this.currentPlayer.name + "'s turn!";
     },
     chooseTopCenter: function() {
-      this.topCenter = this.player1.symbol;
+      this.topCenter = this.currentPlayer.symbol;
+      this.nextPlayer();
+      this.message = this.currentPlayer.name + "'s turn!";
     },
     chooseTopRight: function() {
-      this.topRight = this.player1.symbol;
+      this.topRight = this.currentPlayer.symbol;
+      this.nextPlayer();
+      this.message = this.currentPlayer.name + "'s turn!";
     },
     chooseMiddleLeft: function() {
-      this.middleLeft = this.player1.symbol;
+      this.middleLeft = this.currentPlayer.symbol;
+      this.nextPlayer();
+      this.message = this.currentPlayer.name + "'s turn!";
     },
     chooseCenter: function() {
-      this.center = this.player1.symbol;
+      this.center = this.currentPlayer.symbol;
+      this.nextPlayer();
+      this.message = this.currentPlayer.name + "'s turn!";
     },
     chooseMiddleRight: function() {
-      this.middleRight = this.player1.symbol;
+      this.middleRight = this.currentPlayer.symbol;
+      this.nextPlayer();
+      this.message = this.currentPlayer.name + "'s turn!";
     },
     chooseBottomLeft: function() {
-      this.bottomLeft = this.player1.symbol;
+      this.bottomLeft = this.currentPlayer.symbol;
+      this.nextPlayer();
+      this.message = this.currentPlayer.name + "'s turn!";
     },
     chooseBottomCenter: function() {
-      this.bottomCenter = this.player1.symbol;
+      this.bottomCenter = this.currentPlayer.symbol;
+      this.nextPlayer();
+      this.message = this.currentPlayer.name + "'s turn!";
     },
     chooseBottomRight: function() {
-      this.bottomRight = this.player1.symbol;
+      this.bottomRight = this.currentPlayer.symbol;
+      this.nextPlayer();
+      this.message = this.currentPlayer.name + "'s turn!";
+    },
+    nextPlayer: function() {
+      if (this.currentPlayer === this.player1) {
+        this.currentPlayer = this.player2;
+        return this.currentPlayer;
+      } else {
+        this.currentPlayer = this.player1;
+        return this.currentPlayer;
+      }
     },
     playAgain: function() {
       location.reload();
