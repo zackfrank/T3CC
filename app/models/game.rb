@@ -10,8 +10,6 @@ class Game < ApplicationRecord
   end
 
   def player_setup(player1, player2, names, who_is_x)
-    # @player1 = player1
-    # @player2 = player2
     player1.game_id = self.id
     player2.game_id = self.id
     if who_is_x == 'player1'
@@ -61,7 +59,14 @@ class Game < ApplicationRecord
     self.board.save
   end
 
-  def make_computer_move(player, space)
+  def make_computer_move(player)
+    if game.difficulty_level == 'Easy'
+      player.easy_eval_board
+    elsif game.difficulty_level == 'Medium'
+      player.medium_eval_board
+    else
+      player.hard_eval_board
+    end
   end
 
   def get_score(board, depth)
@@ -116,7 +121,7 @@ class Game < ApplicationRecord
     end
   end
 
-  def winning_possibilities(b)
+  def winning_possibilities(b) #possible rows, columns, and diagonals for a win
     [
       [b[0], b[1], b[2]],
       [b[3], b[4], b[5]],
@@ -133,15 +138,21 @@ class Game < ApplicationRecord
     winning_possibilities(board).any? {|possible_win| possible_win.uniq.length == 1 }
   end
 
-  def tie(board)
-    board.all? { |s| s == "X" || s == "O" }
+  def tie(board) #returns boolean if there is a tie
+    board_array = []
+    index = 0
+    9.times do
+      board_array << board[index]
+      index += 1
+    end
+    board_array.all? { |s| s == "X" || s == "O" }
   end
 
-  def game_is_over(board)
+  def game_is_over(board) #returns boolean if either winner or tie
     self.someone_wins(board) || self.tie(board)
   end
 
-  def winner(board)
+  def winner(board) #returns winner, tie, or nil
     p1symbol = self.player1.symbol
     p2symbol = self.player2.symbol
     if winning_possibilities(board).detect {|possible_win| possible_win.all? p1symbol }
@@ -172,7 +183,8 @@ class Game < ApplicationRecord
       difficulty_level: difficulty_level,
       player1: player1,
       player2: player2,
-      winner: winner(board)
+      winner: winner(board),
+      tie: tie(board)
     }
   end
 

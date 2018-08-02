@@ -27,6 +27,13 @@ class V1::GamesController < ApplicationController
     space = params[:space]
     board = game.board
 
+    # game method to: 
+    # make human move
+    # switch to next player
+    # if computer, make computer move based on diff level
+    # send computer move to frontend
+    # if cvc
+
     if player.class == Human
       game.make_human_move(player, space)
     else

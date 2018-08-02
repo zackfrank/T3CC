@@ -120,6 +120,15 @@
     </div>
     <!-- End of Modal -->
 
+    <!-- Tie Modal -->
+    <div id="modal" class="modal" v-if="game.tie">
+      <div class="modal-content" id="centered-modal">
+        <h2>*** Tie Game ***</h2>
+        <button @click="playAgain()">Play Again!</button>
+      </div>
+    </div>
+    <!-- End of Modal -->
+
     <h1>Welcome to Tic Tac Toe by Command Line Games, Inc!</h1>
 
     <div>
