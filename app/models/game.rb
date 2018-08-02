@@ -46,8 +46,12 @@ class Game < ApplicationRecord
     return player2
   end
 
-  def switch_player
-    @current_player == @player1 ? @current_player = @player2 : @current_player = @player1
+  def switch_player(current_player)
+    current_player == player1 ? @next_player = player2 : @next_player = player1
+  end
+
+  def next_player
+    @next_player
   end
 
   def opposite_player(player)
@@ -184,7 +188,8 @@ class Game < ApplicationRecord
       player1: player1,
       player2: player2,
       winner: winner(board),
-      tie: tie(board)
+      tie: tie(board),
+      next_player: next_player
     }
   end
 

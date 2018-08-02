@@ -78,13 +78,13 @@ var HomePage = {
         level: this.difficultyLevel,
         names: [this.player1.name, this.player2.name],
         who_is_x: whoIsX,
-        board_id: this.board.id
+        board_id: this.board.id,
+        first_move: true
       };
       axios.post("v1/games", params).then(
         function(response) {
           this.start = true;
           this.game = response.data;
-          console.log(response.data);
           this.player1 = response.data.player1;
           this.player2 = response.data.player2;
           this.message = this.first + ", make your first move!";
@@ -100,7 +100,6 @@ var HomePage = {
       if (this.topLeft === "") {
         this.topLeft = this.currentPlayer.symbol;
         this.submitMove(0);
-        this.nextPlayer(); 
       } else {
         this.spotTaken();
       }
@@ -109,7 +108,6 @@ var HomePage = {
       if (this.topCenter === "") {
         this.topCenter = this.currentPlayer.symbol;
         this.submitMove(1);
-        this.nextPlayer();
       } else {
         this.spotTaken();
       }
@@ -118,7 +116,6 @@ var HomePage = {
       if (this.topRight === "") {
         this.topRight = this.currentPlayer.symbol;
         this.submitMove(2);
-        this.nextPlayer();
       } else {
         this.spotTaken();
       }
@@ -127,7 +124,6 @@ var HomePage = {
       if (this.middleLeft === "") {
         this.middleLeft = this.currentPlayer.symbol;
         this.submitMove(3);
-        this.nextPlayer();
       } else {
         this.spotTaken();
       }
@@ -136,7 +132,6 @@ var HomePage = {
       if (this.center === "") {
         this.center = this.currentPlayer.symbol;
         this.submitMove(4);
-        this.nextPlayer();
       } else {
         this.spotTaken();
       }
@@ -145,7 +140,6 @@ var HomePage = {
       if (this.middleRight === "") {
         this.middleRight = this.currentPlayer.symbol;
         this.submitMove(5);
-        this.nextPlayer();
       } else {
         this.spotTaken();
       }
@@ -154,7 +148,6 @@ var HomePage = {
       if (this.bottomLeft === "") {
         this.bottomLeft = this.currentPlayer.symbol;
         this.submitMove(6);
-        this.nextPlayer();
       } else {
         this.spotTaken();
       }
@@ -163,7 +156,6 @@ var HomePage = {
       if (this.bottomCenter === "") {
         this.bottomCenter = this.currentPlayer.symbol;
         this.submitMove(7);
-        this.nextPlayer();
       } else {
         this.spotTaken();
       }
@@ -172,7 +164,6 @@ var HomePage = {
       if (this.bottomRight === "") {
         this.bottomRight = this.currentPlayer.symbol;
         this.submitMove(8);
-        this.nextPlayer();
       } else {
         this.spotTaken();
       }
@@ -189,18 +180,20 @@ var HomePage = {
         function(response) {
           this.board = response.data.board;
           this.game = response.data;
+          this.currentPlayer = response.data.next_player;
+          this.message = this.currentPlayer.name + "'s turn!";
         }.bind(this)
       );
     },
     // get this from backend and fold it into submit move:
-    nextPlayer: function() {
-      if (this.currentPlayer === this.player1) {
-        this.currentPlayer = this.player2;
-      } else {
-        this.currentPlayer = this.player1;
-      }
-      this.message = this.currentPlayer.name + "'s turn!";
-    },
+    // nextPlayer: function() {
+    //   if (this.currentPlayer === this.player1) {
+    //     this.currentPlayer = this.player2;
+    //   } else {
+    //     this.currentPlayer = this.player1;
+    //   }
+    //   this.message = this.currentPlayer.name + "'s turn!";
+    // },
     playAgain: function() {
       location.reload();
     }

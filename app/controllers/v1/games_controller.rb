@@ -40,6 +40,8 @@ class V1::GamesController < ApplicationController
       game.make_computer_move(player, space)
     end
 
+    game.switch_player(player) unless params[:first_move]
+
     render json: game.as_json
   end
 
