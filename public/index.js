@@ -181,19 +181,14 @@ var HomePage = {
           this.board = response.data.board;
           this.game = response.data;
           this.currentPlayer = response.data.next_player;
-          this.message = this.currentPlayer.name + "'s turn!";
+          if (response.data.winner || response.data.tie) {
+            this.message = "Game Over!";
+          } else {
+            this.message = this.currentPlayer.name + "'s turn!";
+          }
         }.bind(this)
       );
     },
-    // get this from backend and fold it into submit move:
-    // nextPlayer: function() {
-    //   if (this.currentPlayer === this.player1) {
-    //     this.currentPlayer = this.player2;
-    //   } else {
-    //     this.currentPlayer = this.player1;
-    //   }
-    //   this.message = this.currentPlayer.name + "'s turn!";
-    // },
     playAgain: function() {
       location.reload();
     }
