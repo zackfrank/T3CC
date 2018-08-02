@@ -13,11 +13,17 @@
 
 /* Modal Content/Box */
 .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 40%; /* Could be more or less, depending on screen size */
+  background-color: rgb(7, 66, 107);
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  padding-top: 10px;
+  padding-bottom: 35px;
+  border: 1px solid #888;
+  width: 40%; /* Could be more or less, depending on screen size */
+  color: white;
+  border-radius: 5px;
+  text-shadow: #000 0px 0px 1px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 #centered-modal {
@@ -26,8 +32,16 @@
 
 h1 {
   text-align: center;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  width: 90%;
+  margin: auto;
   margin-top: 50px;
   margin-bottom: 50px;
+  border-radius: 5px;
+  background: #07426b;
+  color: white;
+  text-shadow: #000 0px 0px 1px;
 }
 
 table, td {
@@ -39,6 +53,7 @@ table, td {
 .message {
   text-align: center;
   font-size: 26px;
+  color: #303643;
 }
 
 img {
