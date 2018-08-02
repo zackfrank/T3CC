@@ -2,26 +2,6 @@ class Computer < ApplicationRecord
   belongs_to :game
   validates :game, presence: false
  
-  def set_symbol(symbol)
-    self.symbol = symbol
-  end
-
-  def make_move
-    self.symbol
-  end
-
-  def difficulty_level
-    # find game and then find diff level
-  end
-
-  def board
-    # find board
-  end
-
-  def current_player
-    # find current player
-  end
-
   def responses
     [
       "Hmm, nice move. My turn...",
@@ -35,29 +15,34 @@ class Computer < ApplicationRecord
     ]
   end
 
-  def medium_eval_board
-    if @difficulty_level == "Medium"
-      spot = nil
-      until spot
-        if @board[4] == "4"
-          spot = 4
-          @board[spot] = @current_player.make_move # if available, comp takes middle spot
+  def easy_eval_board
+    spaces = self.game.board.available_spaces
+    max = spaces.length - 1
+    spot = spaces[rand(0..max)]
+    self.game.board[spot] = self.symbol
+  end
+
+  def medium_eval_board(board)
+    spot = nil
+    until spot
+      if board[4] == "4"
+        spot = 4
+        board[spot] = self.symbol # if available, comp takes middle spot
+      else
+        spot = get_best_move(board, @current_player)
+        if board[spot] != "X" && board[spot] != "O"
+          board[spot] = self.symbol
         else
-          spot = get_best_move(@board, @current_player)
-          if @board[spot] != "X" && @board[spot] != "O"
-            @board[spot] = @current_player.make_move
-          else
-            spot = nil
-          end
+          spot = nil
         end
       end
     end
   end
 
-  def hard_eval_board
-    spot = get_best_move(@board, @current_player)
-    @board[spot] = @current_player.make_move
-    computer_move_description(spot)
+  def hard_eval_board(board, player)
+    spot = minimax(board, player, depth = 0)
+    self.game.board[spot] = player.symbol
+    # computer_move_description(spot)
   end
 
   def get_best_move(board, player, depth = 0)

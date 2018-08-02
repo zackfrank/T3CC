@@ -111,10 +111,10 @@
     <!-- End of Modal -->
 
     <!-- Winner Modal -->
-    <div id="modal" class="modal" v-if="winner">
+    <div id="modal" class="modal" v-if="game.winner">
       <div class="modal-content" id="centered-modal">
         <h2>*** We Have a Winner! ***</h2>
-        <h3>Congratulations {{winner}}</h3>
+        <h3>Congratulations {{game.winner.name}}</h3>
         <button @click="playAgain()">Play Again!</button>
       </div>
     </div>

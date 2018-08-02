@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_07_27_060227) do
+ActiveRecord::Schema.define(version: 2018_08_01_185908) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,7 +18,15 @@ ActiveRecord::Schema.define(version: 2018_07_27_060227) do
   create_table "boards", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "spaces"
+    t.string "0"
+    t.string "1"
+    t.string "2"
+    t.string "3"
+    t.string "4"
+    t.string "5"
+    t.string "6"
+    t.string "7"
+    t.string "8"
   end
 
   create_table "computers", force: :cascade do |t|
@@ -33,11 +41,11 @@ ActiveRecord::Schema.define(version: 2018_07_27_060227) do
   create_table "games", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "player1_id"
-    t.integer "player2_id"
     t.string "game_type"
     t.string "difficulty_level"
     t.integer "board_id"
+    t.integer "player1_id"
+    t.integer "player2_id"
   end
 
   create_table "humen", force: :cascade do |t|

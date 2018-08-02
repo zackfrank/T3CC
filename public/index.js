@@ -4,7 +4,8 @@ var HomePage = {
   template: "#home-page",
   data: function() {
     return {
-      board: { spaces: [] },
+      game: {},
+      board: {},
       gameType: null,
       difficultyLevel: null,
       player1: {
@@ -30,8 +31,7 @@ var HomePage = {
       middleRight: "",
       bottomLeft: "",
       bottomCenter: "",
-      bottomRight: "",
-      winner: null,
+      bottomRight: ""
     };
   },
   created: function() {
@@ -68,12 +68,9 @@ var HomePage = {
       }
     },
     startGame: function() {
-      // set player symbols (redundant with backend methods?)
       if (this.player1.symbol === 'X') {
-        // this.player2.symbol = 'O';
         var whoIsX = 'player1';
       } else {
-        // this.player2.symbol = 'X';
         whoIsX = 'player2';
       }
       var params = {
@@ -86,6 +83,8 @@ var HomePage = {
       axios.post("v1/games", params).then(
         function(response) {
           this.start = true;
+          this.game = response.data;
+          console.log(response.data);
           this.player1 = response.data.player1;
           this.player2 = response.data.player2;
           this.message = this.first + ", make your first move!";
@@ -100,92 +99,107 @@ var HomePage = {
     chooseTopLeft: function() {
       if (this.topLeft === "") {
         this.topLeft = this.currentPlayer.symbol;
-        this.nextPlayer();
-        this.message = this.currentPlayer.name + "'s turn!";
+        this.submitMove(0);
+        this.nextPlayer(); 
       } else {
-        this.message = "That spot has already been taken, please choose a valid spot.";
+        this.spotTaken();
       }
     },
     chooseTopCenter: function() {
       if (this.topCenter === "") {
         this.topCenter = this.currentPlayer.symbol;
+        this.submitMove(1);
         this.nextPlayer();
-        this.message = this.currentPlayer.name + "'s turn!";
       } else {
-        this.message = "That spot has already been taken, please choose a valid spot.";
+        this.spotTaken();
       }
     },
     chooseTopRight: function() {
       if (this.topRight === "") {
         this.topRight = this.currentPlayer.symbol;
+        this.submitMove(2);
         this.nextPlayer();
-        this.message = this.currentPlayer.name + "'s turn!";
       } else {
-        this.message = "That spot has already been taken, please choose a valid spot.";
+        this.spotTaken();
       }
     },
     chooseMiddleLeft: function() {
       if (this.middleLeft === "") {
         this.middleLeft = this.currentPlayer.symbol;
+        this.submitMove(3);
         this.nextPlayer();
-        this.message = this.currentPlayer.name + "'s turn!";
       } else {
-        this.message = "That spot has already been taken, please choose a valid spot.";
+        this.spotTaken();
       }
     },
     chooseCenter: function() {
       if (this.center === "") {
         this.center = this.currentPlayer.symbol;
+        this.submitMove(4);
         this.nextPlayer();
-        this.message = this.currentPlayer.name + "'s turn!";
       } else {
-        this.message = "That spot has already been taken, please choose a valid spot.";
+        this.spotTaken();
       }
     },
     chooseMiddleRight: function() {
       if (this.middleRight === "") {
         this.middleRight = this.currentPlayer.symbol;
+        this.submitMove(5);
         this.nextPlayer();
-        this.message = this.currentPlayer.name + "'s turn!";
       } else {
-        this.message = "That spot has already been taken, please choose a valid spot.";
+        this.spotTaken();
       }
     },
     chooseBottomLeft: function() {
       if (this.bottomLeft === "") {
         this.bottomLeft = this.currentPlayer.symbol;
+        this.submitMove(6);
         this.nextPlayer();
-        this.message = this.currentPlayer.name + "'s turn!";
       } else {
-        this.message = "That spot has already been taken, please choose a valid spot.";
+        this.spotTaken();
       }
     },
     chooseBottomCenter: function() {
       if (this.bottomCenter === "") {
         this.bottomCenter = this.currentPlayer.symbol;
+        this.submitMove(7);
         this.nextPlayer();
-        this.message = this.currentPlayer.name + "'s turn!";
       } else {
-        this.message = "That spot has already been taken, please choose a valid spot.";
+        this.spotTaken();
       }
     },
     chooseBottomRight: function() {
       if (this.bottomRight === "") {
         this.bottomRight = this.currentPlayer.symbol;
+        this.submitMove(8);
         this.nextPlayer();
-        this.message = this.currentPlayer.name + "'s turn!";
       } else {
-        this.message = "That spot has already been taken, please choose a valid spot.";
+        this.spotTaken();
       }
     },
+    spotTaken: function() {
+      this.message = "That spot has already been taken, please choose a valid spot.";
+    },
+    submitMove: function(space) {
+      var params = {
+        player: this.currentPlayer,
+        space: space
+      };
+      axios.patch("v1/games/" + this.game.id, params).then(
+        function(response) {
+          this.board = response.data.board;
+          this.game = response.data;
+        }.bind(this)
+      );
+    },
+    // get this from backend and fold it into submit move:
     nextPlayer: function() {
       if (this.currentPlayer === this.player1) {
         this.currentPlayer = this.player2;
-        return this.currentPlayer;
       } else {
         this.currentPlayer = this.player1;
-        return this.currentPlayer;
       }
+      this.message = this.currentPlayer.name + "'s turn!";
     },
     playAgain: function() {
       location.reload();

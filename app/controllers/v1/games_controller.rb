@@ -17,12 +17,22 @@ class V1::GamesController < ApplicationController
     end
 
     game.player_setup(@player1, @player2, params[:names], params[:who_is_x])
+    
+    render json: game.as_json
+  end
 
-    game.player1.save
-    game.player2.save
-    game.player1_id = game.player1.id
-    game.player2_id = game.player2.id
-    game.save
+  def update
+    game = Game.find(params[:id])
+    params[:player][:id] == game.player1.id ? player = game.player1 : player = game.player2
+    space = params[:space]
+    board = game.board
+
+    if player.class == Human
+      game.make_human_move(player, space)
+    else
+      game.make_computer_move(player, space)
+    end
+
     render json: game.as_json
   end
 

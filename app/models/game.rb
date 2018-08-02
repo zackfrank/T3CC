@@ -10,10 +10,10 @@ class Game < ApplicationRecord
   end
 
   def player_setup(player1, player2, names, who_is_x)
-    @player1 = player1
-    @player2 = player2
-    self.player1.game_id = self.id
-    self.player2.game_id = self.id
+    # @player1 = player1
+    # @player2 = player2
+    player1.game_id = self.id
+    player2.game_id = self.id
     if who_is_x == 'player1'
       player1.symbol = "X"
       player2.symbol = "O"
@@ -21,16 +21,47 @@ class Game < ApplicationRecord
       player1.symbol = "O"
       player2.symbol = "X"
     end
-    self.player1.name = names[0]
-    self.player2.name = names[1]
+    player1.name = names[0]
+    player2.name = names[1]
+    player1.save
+    player2.save
+    self.player1_id = player1.id
+    self.player2_id = player2.id
+    self.save
   end
 
   def player1
-    @player1
+    if self.game_type == 'hvh' || self.game_type == 'hvc'
+      player1 = Human.find(self.player1_id)
+    else 
+      player1 = Computer.find(self.player1_id)
+    end
+    return player1
   end
 
   def player2
-    @player2
+    if self.game_type == 'hvc' || self.game_type == 'cvc'
+      player2 = Computer.find(self.player2_id)
+    else 
+      player2 = Human.find(self.player2_id)
+    end
+    return player2
+  end
+
+  def switch_player
+    @current_player == @player1 ? @current_player = @player2 : @current_player = @player1
+  end
+
+  def opposite_player(player)
+    player == @player1 ? @player2 : @player1
+  end
+
+  def make_human_move(player, space)
+    self.board[space] = player.symbol
+    self.board.save
+  end
+
+  def make_computer_move(player, space)
   end
 
   def get_score(board, depth)
@@ -45,7 +76,7 @@ class Game < ApplicationRecord
   end
 
   def minimax(board, player, depth)
-    if game_is_over(board) || tie(board)
+    if game_is_over(board)
       return get_score(board, depth)
     end
     depth += 1
@@ -54,11 +85,11 @@ class Game < ApplicationRecord
     available_spaces(board).each do |space|
       new_board = board.dup # temporary representation of current board
       new_board[space.to_i] = player.make_move # make potential move on temp board 
-      scores << minimax(new_board, opposite_player(player), depth) # store potential state of board in array
-      moves << space # store possible move (available space) in array
+      scores << minimax(new_board, opposite_player(player), depth) # if game over, store score in array to eventually pass up best score
+      moves << space # store move that correlates to stored score above
     end
     
-    if @difficulty_level == "Hard"
+    if self.difficulty_level == "Hard"
       if @current_player == player
         # This is the max calculation
         max_score_index = scores.each_with_index.max[1]
@@ -70,7 +101,7 @@ class Game < ApplicationRecord
         @choice = moves[min_score_index]
         return scores[min_score_index]
       end
-    else
+    else # may get rid of this - for Easy mode, basically try NOT to win
       if @current_player == player
         # This is the min calculation
         min_score_index = scores.each_with_index.min[1]
@@ -85,23 +116,8 @@ class Game < ApplicationRecord
     end
   end
 
-  def game_is_over(b) #switch to someone_wins or something so game_is_over can be used to combine this and tie
-    [b[0], b[1], b[2]].uniq.length == 1 ||
-    [b[3], b[4], b[5]].uniq.length == 1 ||
-    [b[6], b[7], b[8]].uniq.length == 1 ||
-    [b[0], b[3], b[6]].uniq.length == 1 ||
-    [b[1], b[4], b[7]].uniq.length == 1 ||
-    [b[2], b[5], b[8]].uniq.length == 1 ||
-    [b[0], b[4], b[8]].uniq.length == 1 ||
-    [b[2], b[4], b[6]].uniq.length == 1
-  end
-
-  def tie(b)
-    b.all? { |s| s == "X" || s == "O" }
-  end
-
-  def winner(b)
-    winning_possibilities = [
+  def winning_possibilities(b)
+    [
       [b[0], b[1], b[2]],
       [b[3], b[4], b[5]],
       [b[6], b[7], b[8]],
@@ -111,12 +127,29 @@ class Game < ApplicationRecord
       [b[0], b[4], b[8]],
       [b[2], b[4], b[6]]
     ]
-    if winning_possibilities.detect {|possible_win| possible_win.all? @player2.make_move }
-      @winner = @player2
-    elsif winning_possibilities.detect {|possible_win| possible_win.all? @player1.make_move }
-      @winner = @player1
+  end
+
+  def someone_wins(board) #returns boolean if there is a winner
+    winning_possibilities(board).any? {|possible_win| possible_win.uniq.length == 1 }
+  end
+
+  def tie(board)
+    board.all? { |s| s == "X" || s == "O" }
+  end
+
+  def game_is_over(board)
+    self.someone_wins(board) || self.tie(board)
+  end
+
+  def winner(board)
+    p1symbol = self.player1.symbol
+    p2symbol = self.player2.symbol
+    if winning_possibilities(board).detect {|possible_win| possible_win.all? p1symbol }
+      return player1
+    elsif winning_possibilities(board).detect {|possible_win| possible_win.all? p2symbol }
+      return player2
     else
-      @winner = 'Tie'
+      return false
     end
   end
 
@@ -138,7 +171,8 @@ class Game < ApplicationRecord
       game_type: game_type,
       difficulty_level: difficulty_level,
       player1: player1,
-      player2: player2
+      player2: player2,
+      winner: winner(board)
     }
   end
 
