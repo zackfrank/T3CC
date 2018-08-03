@@ -189,7 +189,27 @@ var HomePage = {
         }.bind(this)
       );
     },
-    playAgain: function() {
+    rematch: function() {
+      this.topLeft = "";
+      this.topCenter = "";
+      this.topRight = "";
+      this.middleLeft = "";
+      this.center = "";
+      this.middleRight = "";
+      this.bottomLeft = "";
+      this.bottomCenter = "";
+      this.bottomRight = ""; 
+      this.currentPlayer = this.first;
+      axios.post("v1/boards").then(
+        function(response) {
+          this.board = response.data;
+          console.log("Board ID: ", this.board.id);
+          this.startGame();
+          console.log("Game ID: ", this.game.id);
+        }.bind(this)
+      );
+    },
+    startOver: function() {
       location.reload();
     }
   },

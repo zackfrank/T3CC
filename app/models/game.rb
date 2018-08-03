@@ -149,7 +149,7 @@ class Game < ApplicationRecord
       board_array << board[index]
       index += 1
     end
-    board_array.all? { |s| s == "X" || s == "O" }
+    board_array.all? { |s| s == "X" || s == "O" } && !winner(board)
   end
 
   def game_is_over(board) #returns boolean if either winner or tie
