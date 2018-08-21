@@ -20,7 +20,7 @@ class Board < ApplicationRecord
 
   def available_spaces()
     # unless game.game_is_over(board)
-    return spaces_array.select {|s| s != "X" && s != "O" }
+    return spaces_array.select {|space| space != "X" && space != "O" }
     # end
   end
 

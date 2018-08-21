@@ -142,43 +142,23 @@ class Game < ApplicationRecord
     winning_possibilities(board).any? {|possible_win| possible_win.uniq.length == 1 }
   end
 
-  # def board_array #array of spaces
-  #   board_array = []
-  #   index = 0
-  #   9.times do
-  #     board_array << board[index]
-  #     index += 1
-  #   end
-  #   return board_array
-  # end
-
   def tie(board) #returns boolean if there is a tie
-    board.spaces_array.all? { |s| s == "X" || s == "O" } && !winner(board)
+    board.spaces_array.all? { |s| s == "X" || s == "O" } && !winner()
   end
 
   def game_is_over(board) #returns boolean if either winner or tie
     self.someone_wins(board) || self.tie(board)
   end
 
-  def winner(board) #returns winner, tie, or nil
+  def winner #returns winner or nil
     p1symbol = self.player1.symbol
     p2symbol = self.player2.symbol
-    if winning_possibilities(board).detect {|possible_win| possible_win.all? p1symbol }
+    if winning_possibilities(self.board).detect {|possible_win| possible_win.all? p1symbol }
       return player1
-    elsif winning_possibilities(board).detect {|possible_win| possible_win.all? p2symbol }
+    elsif winning_possibilities(self.board).detect {|possible_win| possible_win.all? p2symbol }
       return player2
     else
       return false
-    end
-  end
-
-  def winning_message
-    if @winner == @player1
-      return "#{@names[@player1]} wins! Great job #{@names[@player1]}! Play again!"
-    elsif @winner == @player2
-      return "#{@names[@player2]} wins! Nice try #{@names[@player1]}! Play again!"
-    else
-      return "It was a tie! Play again!"
     end
   end
 
@@ -189,11 +169,11 @@ class Game < ApplicationRecord
       board_id: board_id,
       board: board,
       game_type: game_type,
-      computer_response: player2.random_response,
+      computer_response: player2.class == Computer ? player2.selected_response(self) : nil,
       difficulty_level: difficulty_level,
       player1: player1,
       player2: player2,
-      winner: winner(board),
+      winner: winner,
       tie: tie(board),
       next_player: next_player
     }

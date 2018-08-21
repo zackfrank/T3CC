@@ -39,8 +39,6 @@ var HomePage = {
     axios.post("v1/boards").then(
       function(response) {
         this.board = response.data;
-        console.log(this.board);
-        console.log("topLeft:", this.topLeft);
       }.bind(this)
     );
   },
@@ -92,6 +90,10 @@ var HomePage = {
             this.currentPlayer = this.player1;
           } else {
             this.currentPlayer = this.player2;
+            if (this.gameType === 'hvc') {
+              this.submitMove(null);
+              this.currentPlayer = this.player1;
+            }
           }
         }.bind(this)
       );
@@ -182,29 +184,100 @@ var HomePage = {
       };
       axios.patch("v1/games/" + this.game.id, params).then(
         function(response) {
+          // this.board = response.data.board;
+
+          // if (this.gameType === 'hvh') {
+          //   this.game = response.data;
+          //   this.currentPlayer = response.data.next_player;
+          //   if (response.data.winner || response.data.tie) {
+          //     this.message = "Game over!";
+          //   } else {
+          //     this.message = this.currentPlayer.name + "'s turn!";
+          //   }
+          // } else if (this.gameType === 'hvc') {
+          //   // If game is not over, wait 1.5sec and make computer move, computer message, next turn messages
+          //   if (!response.data.winner && !response.data.tie) {
+          //     console.log("No winner, no tie ", response.data);
+          //     this.game = response.data;
+          //     this.moveAllowed = false;
+          //     this.message = "Computer's Turn";
+          //     this.computerResponse = "Computer: " + this.game.computer_response;
+          //     setTimeout(function() {
+          //       this.registerComputerMove();
+          //     }.bind(this), 1500);
+          //   } else {
+          //     // If there's a winner or a tie...
+          //     if (response.data.winner === this.player2 || (response.data.tie && (this.first === this.player2.name))) {
+          //       console.log("Player 2 wins ", response.data);
+          //       this.message = "Computer's Turn";
+          //       setTimeout(function() {
+          //         this.registerComputerMove();
+          //         this.game = response.data;
+          //         this.message = "Game over!";
+          //         this.computerResponse = "Computer: " + this.game.computer_response;
+          //       }.bind(this), 1500);
+          //     } else if (response.data.winner === this.player1 || response.data.tie) {
+          //       console.log("Player 1 wins ", response.data);
+          //       this.game = response.data;
+          //       this.message = "Game over!";
+          //       this.computerResponse = "Computer: " + this.game.computer_response;
+          //     }
+          //   }
+          // }
+
           this.board = response.data.board;
-          if (this.game.game_type !== 'hvh') {
+          console.log("this.gameType: ", this.gameType);
+          console.log("response.data.winner.id :", response.data.winner.id);
+          console.log("this.player1.id: ", this.player1.id);
+          console.log("!response.data.tie: ", !response.data.tie);
+          console.log("this.first: ", this.first);
+          console.log("this.player1.name: ", this.player1.name);
+          // If hvc, we have a computer move returned after every submitted human move
+          if (this.gameType === 'hvc' && (response.data.winner.id !== this.player1.id) && ((response.data.tie && (this.first === this.player2.name)) || !response.data.tie)) {
+            // Human move not allowed while computer is 'thinking'
+            this.moveAllowed = false;
+            // Stall computer move for 1.5sec to make it more 'realistic'
             setTimeout(function() {
-              this.updateBoard();
+              this.registerComputerMove();
             }.bind(this), 1500);
           }
-          this.game = response.data;
-          this.currentPlayer = response.data.next_player;
-          if (response.data.winner || response.data.tie) {
-            this.message = "Game Over!";
-          } else {
-            if (this.game.game_type === 'hvh') { 
-              this.message = this.currentPlayer.name + "'s turn!";
-            } else {
-              this.message = "Computer's Turn";
+
+          // If last move is made by computer, stall ending the game to correspond
+          if (((response.data.winner.id === this.player2.id) || (response.data.tie && (this.first === this.player2.name))) && !this.moveAllowed) {
+            console.log("Computer won or tied.");
+            console.log("response.data.winner: ", response.data.winner);
+            console.log("this.player2: ", this.player2);
+            console.log("response.data.tie: ", response.data.tie);
+            console.log("this.first: ", this.first);
+            console.log("this.player2.name: ", this.player2.name);
+            console.log("this.moveAllowed: ", this.moveAllowed);
+            setTimeout(function() {
+              this.game = response.data;
+              this.message = "Game over!";
               this.computerResponse = "Computer: " + this.game.computer_response;
-              this.moveAllowed = false;
+            }.bind(this), 1500);
+          } else {
+            this.game = response.data;
+            if (response.data.winner || response.data.tie) {
+              // End game if game's over
+              this.message = "Game Over!";
+              this.computerResponse = "Computer: " + this.game.computer_response;
+            } else {
+              // Switch player messaging if game continues (maybe separate out messaging function)
+              if (this.game.game_type === 'hvh') { 
+                this.message = this.currentPlayer.name + "'s turn!";
+              } else {
+                this.message = "Computer's Turn";
+                this.computerResponse = "Computer: " + this.game.computer_response;
+              }
             }
           }
+
+
         }.bind(this)
       );
     },
-    updateBoard: function() {
+    registerComputerMove: function() {
       if (this.board[0] === this.player2.symbol && this.topLeft === "") {
         this.topLeft = this.player2.symbol;
       } else if (this.board[1] === this.player2.symbol && this.topCenter === "") {

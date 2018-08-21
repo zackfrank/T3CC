@@ -15,8 +15,25 @@ class Computer < ApplicationRecord
     ]
   end
 
-  def random_response
-    responses[rand(0..7)]
+  def selected_response(game)
+    if game.board.available_spaces.length == 8
+      response = "Here we go!"
+    elsif game.game_is_over(game.board)
+      response = game_over_message(game)
+    else
+      response = responses[rand(0..7)]
+    end
+    response
+  end
+
+  def game_over_message(game)
+    if game.winner == game.player1
+      return "Great job #{game.player1.name}! Let's play again!"
+    elsif game.winner == game.player2
+      return "I win! Nice try #{game.player1.name}! Let's play again!"
+    else
+      return "It was a tie! Let's play again!"
+    end
   end
 
   def easy_eval_board(game)

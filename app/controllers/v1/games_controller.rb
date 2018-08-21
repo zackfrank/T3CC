@@ -40,18 +40,15 @@ class V1::GamesController < ApplicationController
       game.make_human_move(player, space)
       game.switch_player(player) # sends next 'current player' to front end
     elsif game.game_type == 'hvc'
-      game.make_human_move(player, space)
+      if player == game.player1
+        game.make_human_move(player, space)
+      end
       unless game.game_is_over(game.board)
         game.make_computer_move(game.player2)
-        game.switch_player(game.player2)
+        game.switch_player(game.player2) # switch back to player 1
       end
     elsif game.game_type == 'cvc'
     end
-
-
-    # until game.next_player.class == Human #until next player is human
-    #   game.make_computer_move(player)
-    # end
 
     render json: game.as_json
   end
