@@ -64,9 +64,9 @@ class Game < ApplicationRecord
   end
 
   def make_computer_move(player)
-    if game.difficulty_level == 'Easy'
-      player.easy_eval_board
-    elsif game.difficulty_level == 'Medium'
+    if difficulty_level == 'Easy'
+      player.easy_eval_board(self)
+    elsif difficulty_level == 'Medium'
       player.medium_eval_board
     else
       player.hard_eval_board
@@ -142,14 +142,18 @@ class Game < ApplicationRecord
     winning_possibilities(board).any? {|possible_win| possible_win.uniq.length == 1 }
   end
 
+  # def board_array #array of spaces
+  #   board_array = []
+  #   index = 0
+  #   9.times do
+  #     board_array << board[index]
+  #     index += 1
+  #   end
+  #   return board_array
+  # end
+
   def tie(board) #returns boolean if there is a tie
-    board_array = []
-    index = 0
-    9.times do
-      board_array << board[index]
-      index += 1
-    end
-    board_array.all? { |s| s == "X" || s == "O" } && !winner(board)
+    board.spaces_array.all? { |s| s == "X" || s == "O" } && !winner(board)
   end
 
   def game_is_over(board) #returns boolean if either winner or tie
@@ -183,7 +187,9 @@ class Game < ApplicationRecord
       id: id,
       created_at: created_at,
       board_id: board_id,
+      board: board,
       game_type: game_type,
+      computer_response: player2.random_response,
       difficulty_level: difficulty_level,
       player1: player1,
       player2: player2,

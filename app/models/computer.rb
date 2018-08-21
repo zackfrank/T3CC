@@ -15,11 +15,16 @@ class Computer < ApplicationRecord
     ]
   end
 
-  def easy_eval_board
-    spaces = self.game.board.available_spaces
+  def random_response
+    responses[rand(0..7)]
+  end
+
+  def easy_eval_board(game)
+    spaces = game.board.available_spaces()
     max = spaces.length - 1
-    spot = spaces[rand(0..max)]
-    self.game.board[spot] = self.symbol
+    spot = spaces[rand(0..max)].to_i
+    game.board[spot] = self.symbol
+    game.board.save
   end
 
   def medium_eval_board(board)

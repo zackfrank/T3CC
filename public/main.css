@@ -87,8 +87,14 @@ table, td {
 
 .message {
   text-align: center;
-  font-size: 26px;
+  font-size: 22px;
   color: #303643;
+}
+
+.response {
+  text-align: center;
+  font-size: 24px;
+  color: #27a8e0;
 }
 
 img {

@@ -31,7 +31,8 @@ var HomePage = {
       middleRight: "",
       bottomLeft: "",
       bottomCenter: "",
-      bottomRight: ""
+      bottomRight: "",
+      moveAllowed: true
     };
   },
   created: function() {
@@ -78,12 +79,11 @@ var HomePage = {
         level: this.difficultyLevel,
         names: [this.player1.name, this.player2.name],
         who_is_x: whoIsX,
-        board_id: this.board.id,
-        first_move: true
+        board_id: this.board.id
       };
       axios.post("v1/games", params).then(
         function(response) {
-          this.start = true;
+          this.start = true; // clear modal
           this.game = response.data;
           this.player1 = response.data.player1;
           this.player2 = response.data.player2;
@@ -97,7 +97,7 @@ var HomePage = {
       );
     },
     chooseTopLeft: function() {
-      if (this.topLeft === "") {
+      if (this.topLeft === "" && this.moveAllowed) {
         this.topLeft = this.currentPlayer.symbol;
         this.submitMove(0);
       } else {
@@ -105,7 +105,7 @@ var HomePage = {
       }
     },
     chooseTopCenter: function() {
-      if (this.topCenter === "") {
+      if (this.topCenter === "" && this.moveAllowed) {
         this.topCenter = this.currentPlayer.symbol;
         this.submitMove(1);
       } else {
@@ -113,7 +113,7 @@ var HomePage = {
       }
     },
     chooseTopRight: function() {
-      if (this.topRight === "") {
+      if (this.topRight === "" && this.moveAllowed) {
         this.topRight = this.currentPlayer.symbol;
         this.submitMove(2);
       } else {
@@ -121,7 +121,7 @@ var HomePage = {
       }
     },
     chooseMiddleLeft: function() {
-      if (this.middleLeft === "") {
+      if (this.middleLeft === "" && this.moveAllowed) {
         this.middleLeft = this.currentPlayer.symbol;
         this.submitMove(3);
       } else {
@@ -129,7 +129,7 @@ var HomePage = {
       }
     },
     chooseCenter: function() {
-      if (this.center === "") {
+      if (this.center === "" && this.moveAllowed) {
         this.center = this.currentPlayer.symbol;
         this.submitMove(4);
       } else {
@@ -137,7 +137,7 @@ var HomePage = {
       }
     },
     chooseMiddleRight: function() {
-      if (this.middleRight === "") {
+      if (this.middleRight === "" && this.moveAllowed) {
         this.middleRight = this.currentPlayer.symbol;
         this.submitMove(5);
       } else {
@@ -145,7 +145,7 @@ var HomePage = {
       }
     },
     chooseBottomLeft: function() {
-      if (this.bottomLeft === "") {
+      if (this.bottomLeft === "" && this.moveAllowed) {
         this.bottomLeft = this.currentPlayer.symbol;
         this.submitMove(6);
       } else {
@@ -153,7 +153,7 @@ var HomePage = {
       }
     },
     chooseBottomCenter: function() {
-      if (this.bottomCenter === "") {
+      if (this.bottomCenter === "" && this.moveAllowed) {
         this.bottomCenter = this.currentPlayer.symbol;
         this.submitMove(7);
       } else {
@@ -161,7 +161,7 @@ var HomePage = {
       }
     },
     chooseBottomRight: function() {
-      if (this.bottomRight === "") {
+      if (this.bottomRight === "" && this.moveAllowed) {
         this.bottomRight = this.currentPlayer.symbol;
         this.submitMove(8);
       } else {
@@ -169,7 +169,11 @@ var HomePage = {
       }
     },
     spotTaken: function() {
-      this.message = "That spot has already been taken, please choose a valid spot.";
+      if (this.moveAllowed) {
+        this.message = "That spot has already been taken, please choose a valid spot.";
+      } else {
+        this.message = "You cannot take that spot because it is not your turn.";
+      }
     },
     submitMove: function(space) {
       var params = {
@@ -179,15 +183,49 @@ var HomePage = {
       axios.patch("v1/games/" + this.game.id, params).then(
         function(response) {
           this.board = response.data.board;
+          if (this.game.game_type !== 'hvh') {
+            setTimeout(function() {
+              this.updateBoard();
+            }.bind(this), 1500);
+          }
           this.game = response.data;
           this.currentPlayer = response.data.next_player;
           if (response.data.winner || response.data.tie) {
             this.message = "Game Over!";
           } else {
-            this.message = this.currentPlayer.name + "'s turn!";
+            if (this.game.game_type === 'hvh') { 
+              this.message = this.currentPlayer.name + "'s turn!";
+            } else {
+              this.message = "Computer's Turn";
+              this.computerResponse = "Computer: " + this.game.computer_response;
+              this.moveAllowed = false;
+            }
           }
         }.bind(this)
       );
+    },
+    updateBoard: function() {
+      if (this.board[0] === this.player2.symbol && this.topLeft === "") {
+        this.topLeft = this.player2.symbol;
+      } else if (this.board[1] === this.player2.symbol && this.topCenter === "") {
+        this.topCenter = this.player2.symbol;
+      } else if (this.board[2] === this.player2.symbol && this.topRight === "") {
+        this.topRight = this.player2.symbol;
+      } else if (this.board[3] === this.player2.symbol && this.middleLeft === "") {
+        this.middleLeft = this.player2.symbol;
+      } else if (this.board[4] === this.player2.symbol && this.center === "") {
+        this.center = this.player2.symbol;
+      } else if (this.board[5] === this.player2.symbol && this.middleRight === "") {
+        this.middleRight = this.player2.symbol;
+      } else if (this.board[6] === this.player2.symbol && this.bottomLeft === "") {
+        this.bottomLeft = this.player2.symbol;
+      } else if (this.board[7] === this.player2.symbol && this.bottomCenter === "") {
+        this.bottomCenter = this.player2.symbol;
+      } else if (this.board[8] === this.player2.symbol && this.bottomRight === "") {
+        this.bottomRight = this.player2.symbol;
+      }
+      this.moveAllowed = true;
+      this.message = this.currentPlayer.name + "'s turn!";
     },
     rematch: function() {
       this.topLeft = "";
@@ -200,12 +238,11 @@ var HomePage = {
       this.bottomCenter = "";
       this.bottomRight = ""; 
       this.currentPlayer = this.first;
+      this.computerResponse = "";
       axios.post("v1/boards").then(
         function(response) {
           this.board = response.data;
-          console.log("Board ID: ", this.board.id);
           this.startGame();
-          console.log("Game ID: ", this.game.id);
         }.bind(this)
       );
     },

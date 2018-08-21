@@ -1,9 +1,27 @@
 class Board < ApplicationRecord
 
-  def available_spaces(board)
-    unless game_is_over(board) || tie(board)
-      board.select {|s| s != "X" && s != "O" }
+  def setup
+    index = 0
+    9.times do
+      self[index] = index
+      index += 1
     end
+  end
+
+  def spaces_array #array of spaces
+    spaces_array = []
+    index = 0
+    9.times do
+      spaces_array << self[index]
+      index += 1
+    end
+    return spaces_array
+  end
+
+  def available_spaces()
+    # unless game.game_is_over(board)
+    return spaces_array.select {|s| s != "X" && s != "O" }
+    # end
   end
 
 end

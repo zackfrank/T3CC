@@ -5,42 +5,53 @@ class V1::GamesController < ApplicationController
 
     game.setup(params)
 
-    if params[:game_type] == 'hvh'
+    if params[:game_type] == 'hvh' #if human vs. human
       @player1 = Human.new
       @player2 = Human.new
-    elsif params[:game_type] == 'hvc'
+    elsif params[:game_type] == 'hvc' #if human vs. computer
       @player1 = Human.new
       @player2 = Computer.new
-    else
+    else                          # if computer vs. computer
       @player1 = Computer.new
       @player2 = Computer.new
     end
 
     game.player_setup(@player1, @player2, params[:names], params[:who_is_x])
+
+    if params[:first].class == Computer
+      update(params)
+    end
     
     render json: game.as_json
   end
 
   def update
-    game = Game.find(params[:id])
-    params[:player][:id] == game.player1.id ? player = game.player1 : player = game.player2
+    game = Game.find(params[:id]) #identify game
+    params[:player][:id] == game.player1.id ? player = game.player1 : player = game.player2 #identify player
     space = params[:space]
     board = game.board
 
     # game method to: 
-    # make human move
-    # switch to next player
     # if computer, make computer move based on diff level
     # send computer move to frontend
     # if cvc
 
-    if player.class == Human
+    if game.game_type == 'hvh'
       game.make_human_move(player, space)
-    else
-      game.make_computer_move(player, space)
+      game.switch_player(player) # sends next 'current player' to front end
+    elsif game.game_type == 'hvc'
+      game.make_human_move(player, space)
+      unless game.game_is_over(game.board)
+        game.make_computer_move(game.player2)
+        game.switch_player(game.player2)
+      end
+    elsif game.game_type == 'cvc'
     end
 
-    game.switch_player(player) unless params[:first_move]
+
+    # until game.next_player.class == Human #until next player is human
+    #   game.make_computer_move(player)
+    # end
 
     render json: game.as_json
   end
