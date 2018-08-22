@@ -55,7 +55,7 @@ class Game < ApplicationRecord
   end
 
   def opposite_player(player)
-    player == @player1 ? @player2 : @player1
+    player == player1 ? player2 : player1
   end
 
   def make_human_move(player, space)
@@ -67,61 +67,9 @@ class Game < ApplicationRecord
     if difficulty_level == 'Easy'
       player.easy_eval_board(self)
     elsif difficulty_level == 'Medium'
-      player.medium_eval_board
+      player.medium_eval_board(self)
     else
-      player.hard_eval_board
-    end
-  end
-
-  def get_score(board, depth)
-    winner(board)
-    if @winner == @current_player
-      return 10 - depth
-    elsif @winner == opposite_player(@current_player)
-      return depth - 10
-    else
-      return 0
-    end
-  end
-
-  def minimax(board, player, depth)
-    if game_is_over(board)
-      return get_score(board, depth)
-    end
-    depth += 1
-    scores = []
-    moves = []
-    available_spaces(board).each do |space|
-      new_board = board.dup # temporary representation of current board
-      new_board[space.to_i] = player.make_move # make potential move on temp board 
-      scores << minimax(new_board, opposite_player(player), depth) # if game over, store score in array to eventually pass up best score
-      moves << space # store move that correlates to stored score above
-    end
-    
-    if self.difficulty_level == "Hard"
-      if @current_player == player
-        # This is the max calculation
-        max_score_index = scores.each_with_index.max[1]
-        @choice = moves[max_score_index]
-        return scores[max_score_index]
-      else
-        # This is the min calculation
-        min_score_index = scores.each_with_index.min[1]
-        @choice = moves[min_score_index]
-        return scores[min_score_index]
-      end
-    else # may get rid of this - for Easy mode, basically try NOT to win
-      if @current_player == player
-        # This is the min calculation
-        min_score_index = scores.each_with_index.min[1]
-        @choice = moves[min_score_index]
-        return scores[min_score_index]
-      else
-        # This is the max calculation
-        max_score_index = scores.each_with_index.max[1]
-        @choice = moves[max_score_index]
-        return scores[max_score_index]
-      end
+      player.hard_eval_board(self)
     end
   end
 
@@ -143,19 +91,19 @@ class Game < ApplicationRecord
   end
 
   def tie(board) #returns boolean if there is a tie
-    board.spaces_array.all? { |s| s == "X" || s == "O" } && !winner()
+    board.spaces_array.all? { |s| s == "X" || s == "O" } && !winner(board)
   end
 
   def game_is_over(board) #returns boolean if either winner or tie
     self.someone_wins(board) || self.tie(board)
   end
 
-  def winner #returns winner or nil
+  def winner(board) #returns winner or nil
     p1symbol = self.player1.symbol
     p2symbol = self.player2.symbol
-    if winning_possibilities(self.board).detect {|possible_win| possible_win.all? p1symbol }
+    if winning_possibilities(board).detect {|possible_win| possible_win.all? p1symbol }
       return player1
-    elsif winning_possibilities(self.board).detect {|possible_win| possible_win.all? p2symbol }
+    elsif winning_possibilities(board).detect {|possible_win| possible_win.all? p2symbol }
       return player2
     else
       return false
@@ -173,7 +121,7 @@ class Game < ApplicationRecord
       difficulty_level: difficulty_level,
       player1: player1,
       player2: player2,
-      winner: winner,
+      winner: winner(board),
       tie: tie(board),
       next_player: next_player
     }

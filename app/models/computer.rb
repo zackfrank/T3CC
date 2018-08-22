@@ -27,9 +27,9 @@ class Computer < ApplicationRecord
   end
 
   def game_over_message(game)
-    if game.winner == game.player1
+    if game.winner(game.board) == game.player1
       return "Great job #{game.player1.name}! Let's play again!"
-    elsif game.winner == game.player2
+    elsif game.winner(game.board) == game.player2
       return "I win! Nice try #{game.player1.name}! Let's play again!"
     else
       return "It was a tie! Let's play again!"
@@ -37,71 +37,115 @@ class Computer < ApplicationRecord
   end
 
   def easy_eval_board(game)
-    spaces = game.board.available_spaces()
-    max = spaces.length - 1
-    spot = spaces[rand(0..max)].to_i
-    game.board[spot] = self.symbol
-    game.board.save
+    board = game.board
+    spaces = board.available_spaces()
+    max = spaces.length
+    spot = spaces[rand(0...max)].to_i
+    board[spot] = self.symbol
+    board.save
   end
 
-  def medium_eval_board(board)
+  def medium_eval_board(game)
+    # spot = nil
+    board = game.board
+    if board[4] == "4"
+      spot = 4
+      board[spot] = self.symbol # if available, comp takes middle spot
+    else
+      spot = get_best_medium_move(game)
+      board[spot] = self.symbol
+    end
+    board.save
+  end
+
+  def get_best_medium_move(game)
     spot = nil
-    until spot
-      if board[4] == "4"
-        spot = 4
-        board[spot] = self.symbol # if available, comp takes middle spot
+    board = game.board
+    board.available_spaces.each do |available_space|
+      board[available_space.to_i] = self.symbol
+      if game.winner(board) == self
+        spot = available_space.to_i
+        board[available_space.to_i] = available_space.to_s
+        return spot
       else
-        spot = get_best_move(board, @current_player)
-        if board[spot] != "X" && board[spot] != "O"
-          board[spot] = self.symbol
+        board[available_space.to_i] = game.opposite_player(self).symbol
+        if game.winner(board) == game.opposite_player(self)
+          spot = available_space.to_i
+          board[available_space.to_i] = available_space.to_s
+          return spot
         else
-          spot = nil
+          board[available_space.to_i] = available_space.to_s
         end
       end
     end
+    if !spot
+      spaces = game.board.available_spaces()
+      max = spaces.length
+      spot = spaces[rand(0...max)].to_i
+      return spot
+    end
   end
 
-  def hard_eval_board(board, player)
-    spot = minimax(board, player, depth = 0)
-    self.game.board[spot] = player.symbol
-    # computer_move_description(spot)
+  def hard_eval_board(board)
+    spot = minimax(board, self, depth = 0)
+    board[spot] = self.symbol
   end
 
-  def get_best_move(board, player, depth = 0)
-    if @difficulty_level == "Medium"
-      best_move = nil
-      available_spaces(board).each do |as|
-        board[as.to_i] = @current_player.make_move
-        if game_is_over(board)
-          best_move = as.to_i
-          board[as.to_i] = as
-          return best_move
-        else
-          board[as.to_i] = opposite_player(@current_player).make_move
-          if game_is_over(board)
-            best_move = as.to_i
-            board[as.to_i] = as
-            return best_move
-          else
-            board[as.to_i] = as
-          end
-        end
-      end
-      if best_move
-        return best_move
-      else
-        n = rand(0..available_spaces(board).count)
-        return available_spaces(board)[n].to_i
-      end
+  def get_score(board, depth)
+    winner(board)
+    if @winner == @current_player
+      return 10 - depth
+    elsif @winner == opposite_player(@current_player)
+      return depth - 10
     else
-      minimax(board, player, depth)
-      return @choice.to_i
+      return 0
+    end
+  end
+
+  def minimax(board, player, depth)
+    if game_is_over(board)
+      return get_score(board, depth)
+    end
+    depth += 1
+    scores = []
+    moves = []
+    available_spaces(board).each do |space|
+      new_board = board.dup # temporary representation of current board
+      new_board[space.to_i] = player.make_move # make potential move on temp board 
+      scores << minimax(new_board, opposite_player(player), depth) # if game over, store score in array to eventually pass up best score
+      moves << space # store move that correlates to stored score above
+    end
+    
+    if self.difficulty_level == "Hard"
+      if @current_player == player
+        # This is the max calculation
+        max_score_index = scores.each_with_index.max[1]
+        @choice = moves[max_score_index]
+        return scores[max_score_index]
+      else
+        # This is the min calculation
+        min_score_index = scores.each_with_index.min[1]
+        @choice = moves[min_score_index]
+        return scores[min_score_index]
+      end
+    else # may get rid of this - for Easy mode, basically try NOT to win
+      if @current_player == player
+        # This is the min calculation
+        min_score_index = scores.each_with_index.min[1]
+        @choice = moves[min_score_index]
+        return scores[min_score_index]
+      else
+        # This is the max calculation
+        max_score_index = scores.each_with_index.max[1]
+        @choice = moves[max_score_index]
+        return scores[max_score_index]
+      end
     end
   end
 
   def computer_move_description(spot)
     if !game_is_over(@board) && !tie(@board)
-      puts "#{@names[@current_player]}: I took the #{spots[spot]} spot.\n\n"
+      puts "#{self.name}: I took the #{spots[spot]} spot."
     end
   end
 

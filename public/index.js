@@ -184,54 +184,8 @@ var HomePage = {
       };
       axios.patch("v1/games/" + this.game.id, params).then(
         function(response) {
-          // this.board = response.data.board;
-
-          // if (this.gameType === 'hvh') {
-          //   this.game = response.data;
-          //   this.currentPlayer = response.data.next_player;
-          //   if (response.data.winner || response.data.tie) {
-          //     this.message = "Game over!";
-          //   } else {
-          //     this.message = this.currentPlayer.name + "'s turn!";
-          //   }
-          // } else if (this.gameType === 'hvc') {
-          //   // If game is not over, wait 1.5sec and make computer move, computer message, next turn messages
-          //   if (!response.data.winner && !response.data.tie) {
-          //     console.log("No winner, no tie ", response.data);
-          //     this.game = response.data;
-          //     this.moveAllowed = false;
-          //     this.message = "Computer's Turn";
-          //     this.computerResponse = "Computer: " + this.game.computer_response;
-          //     setTimeout(function() {
-          //       this.registerComputerMove();
-          //     }.bind(this), 1500);
-          //   } else {
-          //     // If there's a winner or a tie...
-          //     if (response.data.winner === this.player2 || (response.data.tie && (this.first === this.player2.name))) {
-          //       console.log("Player 2 wins ", response.data);
-          //       this.message = "Computer's Turn";
-          //       setTimeout(function() {
-          //         this.registerComputerMove();
-          //         this.game = response.data;
-          //         this.message = "Game over!";
-          //         this.computerResponse = "Computer: " + this.game.computer_response;
-          //       }.bind(this), 1500);
-          //     } else if (response.data.winner === this.player1 || response.data.tie) {
-          //       console.log("Player 1 wins ", response.data);
-          //       this.game = response.data;
-          //       this.message = "Game over!";
-          //       this.computerResponse = "Computer: " + this.game.computer_response;
-          //     }
-          //   }
-          // }
-
           this.board = response.data.board;
-          console.log("this.gameType: ", this.gameType);
-          console.log("response.data.winner.id :", response.data.winner.id);
-          console.log("this.player1.id: ", this.player1.id);
-          console.log("!response.data.tie: ", !response.data.tie);
-          console.log("this.first: ", this.first);
-          console.log("this.player1.name: ", this.player1.name);
+
           // If hvc, we have a computer move returned after every submitted human move
           if (this.gameType === 'hvc' && (response.data.winner.id !== this.player1.id) && ((response.data.tie && (this.first === this.player2.name)) || !response.data.tie)) {
             // Human move not allowed while computer is 'thinking'
@@ -272,8 +226,6 @@ var HomePage = {
               }
             }
           }
-
-
         }.bind(this)
       );
     },
