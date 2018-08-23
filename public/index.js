@@ -182,6 +182,12 @@ var HomePage = {
         player: this.currentPlayer,
         space: space
       };
+
+      if (this.difficultyLevel === "Hard" && this.gameType === "hvc") {
+        this.message = "Computer's Turn";
+        this.computerResponse = "Computer: Hmmm, let me think about this...";
+      }
+
       axios.patch("v1/games/" + this.game.id, params).then(
         function(response) {
           this.board = response.data.board;
@@ -190,21 +196,15 @@ var HomePage = {
           if (this.gameType === 'hvc' && (response.data.winner.id !== this.player1.id) && ((response.data.tie && (this.first === this.player2.name)) || !response.data.tie)) {
             // Human move not allowed while computer is 'thinking'
             this.moveAllowed = false;
-            // Stall computer move for 1.5sec to make it more 'realistic'
+            // Stall computer move for 1.5sec to make it more 'realistic' if Easy or Medium (Hard takes too much time)
             setTimeout(function() {
               this.registerComputerMove();
             }.bind(this), 1500);
           }
 
-          // If last move is made by computer, stall ending the game to correspond
+          // If final move is made by computer, stall ending the game to correspond
           if (((response.data.winner.id === this.player2.id) || (response.data.tie && (this.first === this.player2.name))) && !this.moveAllowed) {
-            console.log("Computer won or tied.");
-            console.log("response.data.winner: ", response.data.winner);
-            console.log("this.player2: ", this.player2);
-            console.log("response.data.tie: ", response.data.tie);
-            console.log("this.first: ", this.first);
-            console.log("this.player2.name: ", this.player2.name);
-            console.log("this.moveAllowed: ", this.moveAllowed);
+            // Stall AI updates unless difficulty level is Hard
             setTimeout(function() {
               this.game = response.data;
               this.message = "Game over!";
@@ -221,6 +221,8 @@ var HomePage = {
               if (this.game.game_type === 'hvh') { 
                 this.message = this.currentPlayer.name + "'s turn!";
               } else {
+                // this doesn't work with no delay
+                // add logic to say player 1's turn after move is made
                 this.message = "Computer's Turn";
                 this.computerResponse = "Computer: " + this.game.computer_response;
               }

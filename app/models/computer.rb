@@ -86,60 +86,53 @@ class Computer < ApplicationRecord
     end
   end
 
-  def hard_eval_board(board)
-    spot = minimax(board, self, depth = 0)
-    board[spot] = self.symbol
+  def hard_eval_board(game)
+    board = game.board
+    if board.available_spaces.length >= 8
+      @choice = board.expedite_first_minimax_spot
+    else
+      minimax(game, board, self, depth = 0, self)
+    end
+    board[@choice] = self.symbol
+    board.save
   end
 
-  def get_score(board, depth)
-    winner(board)
-    if @winner == @current_player
+  def get_score(board, depth, game, current_player)
+    winner = game.winner(board)
+    if winner == current_player
       return 10 - depth
-    elsif @winner == opposite_player(@current_player)
+    elsif winner == game.opposite_player(current_player)
       return depth - 10
     else
       return 0
     end
   end
 
-  def minimax(board, player, depth)
-    if game_is_over(board)
-      return get_score(board, depth)
+  def minimax(game, board, player, depth, current_player)
+    if game.game_is_over(board)
+      return get_score(board, depth, game, current_player)
     end
+
     depth += 1
     scores = []
     moves = []
-    available_spaces(board).each do |space|
+    board.available_spaces.each do |space|
       new_board = board.dup # temporary representation of current board
-      new_board[space.to_i] = player.make_move # make potential move on temp board 
-      scores << minimax(new_board, opposite_player(player), depth) # if game over, store score in array to eventually pass up best score
+      new_board[space.to_i] = player.symbol # make potential move on temp board 
+      scores << minimax(game, new_board, game.opposite_player(player), depth, current_player) # if game over, store score in array to eventually pass up best score
       moves << space # store move that correlates to stored score above
     end
     
-    if self.difficulty_level == "Hard"
-      if @current_player == player
-        # This is the max calculation
-        max_score_index = scores.each_with_index.max[1]
-        @choice = moves[max_score_index]
-        return scores[max_score_index]
-      else
-        # This is the min calculation
-        min_score_index = scores.each_with_index.min[1]
-        @choice = moves[min_score_index]
-        return scores[min_score_index]
-      end
-    else # may get rid of this - for Easy mode, basically try NOT to win
-      if @current_player == player
-        # This is the min calculation
-        min_score_index = scores.each_with_index.min[1]
-        @choice = moves[min_score_index]
-        return scores[min_score_index]
-      else
-        # This is the max calculation
-        max_score_index = scores.each_with_index.max[1]
-        @choice = moves[max_score_index]
-        return scores[max_score_index]
-      end
+    if current_player == player
+      # This is the max calculation
+      max_score_index = scores.each_with_index.max[1]
+      @choice = moves[max_score_index]
+      return scores[max_score_index]
+    else
+      # This is the min calculation
+      min_score_index = scores.each_with_index.min[1]
+      @choice = moves[min_score_index]
+      return scores[min_score_index]
     end
   end
 
