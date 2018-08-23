@@ -49,24 +49,7 @@ class Board < ApplicationRecord
   end
 
   def first_move()
-    # spaces_array.detect {|spot| spot == "X" || spot == "O" }
     spaces_array.index("X") || spaces_array.index("O")
-  end
-
-  def expedite_first_minimax_spot
-    if available_spaces.length == 9
-      return 8
-    elsif available_spaces.length == 8
-      if self.center_taken
-        return corners[rand(0..3)].to_i
-      elsif self.corner_taken
-        return 4
-      elsif self.edge_taken
-        return edge_first_minimax_moves[first_move]
-      end
-    else 
-      return nil
-    end
   end
 
 end

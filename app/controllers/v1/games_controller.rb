@@ -31,11 +31,6 @@ class V1::GamesController < ApplicationController
     space = params[:space]
     board = game.board
 
-    # game method to: 
-    # if computer, make computer move based on diff level
-    # send computer move to frontend
-    # if cvc
-
     if game.game_type == 'hvh'
       game.make_human_move(player, space)
       game.switch_player(player) # sends next 'current player' to front end
@@ -48,6 +43,8 @@ class V1::GamesController < ApplicationController
         game.switch_player(game.player2) # switch back to player 1
       end
     elsif game.game_type == 'cvc'
+      # make all moves and send to frontend to play out OR make one move at a time?
+      
     end
 
     render json: game.as_json

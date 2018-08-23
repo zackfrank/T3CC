@@ -59,42 +59,61 @@ class Computer < ApplicationRecord
   end
 
   def get_best_medium_move(game)
-    spot = nil
     board = game.board
-    board.available_spaces.each do |available_space|
+    spaces = board.available_spaces
+    # Evaluate ALL possibilities -- IF computer can win, take the spot
+    spaces.each do |available_space|
       board[available_space.to_i] = self.symbol
       if game.winner(board) == self
         spot = available_space.to_i
         board[available_space.to_i] = available_space.to_s
         return spot
       else
-        board[available_space.to_i] = game.opposite_player(self).symbol
-        if game.winner(board) == game.opposite_player(self)
-          spot = available_space.to_i
-          board[available_space.to_i] = available_space.to_s
-          return spot
-        else
-          board[available_space.to_i] = available_space.to_s
-        end
+        board[available_space.to_i] = available_space.to_s
       end
     end
-    if !spot
-      spaces = game.board.available_spaces()
-      max = spaces.length
-      spot = spaces[rand(0...max)].to_i
-      return spot
+    # # Evaluate ALL possibilities -- IF opposite player could win, block the spot
+    spaces.each do |available_space|
+      board[available_space.to_i] = game.opposite_player(self).symbol
+      if game.winner(board) == game.opposite_player(self)
+        spot = available_space.to_i
+        board[available_space.to_i] = available_space.to_s
+        return spot
+      else
+        board[available_space.to_i] = available_space.to_s
+      end
     end
+    # Otherwise take random spot
+    max = spaces.length
+    spot = spaces[rand(0...max)].to_i
+    return spot
   end
 
   def hard_eval_board(game)
     board = game.board
     if board.available_spaces.length >= 8
-      @choice = board.expedite_first_minimax_spot
+      @choice = expedite_first_minimax_spot(board)
     else
       minimax(game, board, self.symbol, depth = 0, self.symbol)
     end
     board[@choice] = self.symbol
     board.save
+  end
+
+  def expedite_first_minimax_spot(board)
+    if board.available_spaces.length == 9
+      return 8
+    elsif board.available_spaces.length == 8
+      if board.center_taken
+        return board.corners[rand(0..3)].to_i
+      elsif board.corner_taken
+        return 4
+      elsif board.edge_taken
+        return board.edge_first_minimax_moves[board.first_move]
+      end
+    else 
+      return nil
+    end
   end
 
   def get_score(board, depth, game, current_player_symbol)

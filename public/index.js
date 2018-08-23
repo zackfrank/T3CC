@@ -178,6 +178,7 @@ var HomePage = {
       }
     },
     submitMove: function(space) {
+      // THIS NEEDS TO BE REFACTORED & SPLIT INTO SMALLER FUNCTIONS
       var params = {
         player: this.currentPlayer,
         space: space
