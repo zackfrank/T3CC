@@ -91,26 +91,30 @@ class Computer < ApplicationRecord
     if board.available_spaces.length >= 8
       @choice = board.expedite_first_minimax_spot
     else
-      minimax(game, board, self, depth = 0, self)
+      minimax(game, board, self.symbol, depth = 0, self.symbol)
     end
     board[@choice] = self.symbol
     board.save
   end
 
-  def get_score(board, depth, game, current_player)
+  def get_score(board, depth, game, current_player_symbol)
     winner = game.winner(board)
-    if winner == current_player
+    if winner && winner.symbol == current_player_symbol
       return 10 - depth
-    elsif winner == game.opposite_player(current_player)
+    elsif winner && winner.symbol == opposite_player(current_player_symbol)
       return depth - 10
     else
       return 0
     end
   end
 
-  def minimax(game, board, player, depth, current_player)
+  def opposite_player(symbol)
+    symbol == "X" ? "O" : "X"
+  end
+
+  def minimax(game, board, player_symbol, depth, current_player_symbol)
     if game.game_is_over(board)
-      return get_score(board, depth, game, current_player)
+      return get_score(board, depth, game, current_player_symbol)
     end
 
     depth += 1
@@ -118,12 +122,12 @@ class Computer < ApplicationRecord
     moves = []
     board.available_spaces.each do |space|
       new_board = board.dup # temporary representation of current board
-      new_board[space.to_i] = player.symbol # make potential move on temp board 
-      scores << minimax(game, new_board, game.opposite_player(player), depth, current_player) # if game over, store score in array to eventually pass up best score
+      new_board[space.to_i] = player_symbol # make potential move on temp board 
+      scores << minimax(game, new_board, opposite_player(player_symbol), depth, current_player_symbol) # if game over, store score in array to eventually pass up best score
       moves << space # store move that correlates to stored score above
     end
     
-    if current_player == player
+    if current_player_symbol == player_symbol
       # This is the max calculation
       max_score_index = scores.each_with_index.max[1]
       @choice = moves[max_score_index]
