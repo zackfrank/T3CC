@@ -45,22 +45,23 @@ class Board < ApplicationRecord
   end
 
   def edge_first_minimax_moves()
-    {1 => 7, 5 => 8, 3 => 6,6 => 8}
+    {1 => 7, 5 => 8, 3 => 6, 6 => 8}
   end
 
   def first_move()
-    spaces_array.detect {|spot| spot == "X" || spot == "O" }
+    # spaces_array.detect {|spot| spot == "X" || spot == "O" }
+    spaces_array.index("X") || spaces_array.index("O")
   end
 
   def expedite_first_minimax_spot
     if available_spaces.length == 9
       return 8
     elsif available_spaces.length == 8
-      if board.center_taken
+      if self.center_taken
         return corners[rand(0..3)].to_i
-      elsif board.corner_taken
+      elsif self.corner_taken
         return 4
-      elsif board.edge_taken
+      elsif self.edge_taken
         return edge_first_minimax_moves[first_move]
       end
     else 
