@@ -45,7 +45,7 @@ class Board < ApplicationRecord
   end
 
   def edge_first_minimax_moves()
-    {1 => 7, 5 => 8, 3 => 6, 6 => 8}
+    {1 => 7, 5 => 8, 3 => 6, 7 => 8}
   end
 
   def first_move()

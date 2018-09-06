@@ -29,19 +29,19 @@ class Game < ApplicationRecord
   end
 
   def player1
-    if self.game_type == 'hvh' || self.game_type == 'hvc'
-      player1 = Human.find(self.player1_id)
-    else 
+    if self.game_type == 'cvc'
       player1 = Computer.find(self.player1_id)
+    else 
+      player1 = Human.find(self.player1_id)
     end
     return player1
   end
 
   def player2
-    if self.game_type == 'hvc' || self.game_type == 'cvc'
-      player2 = Computer.find(self.player2_id)
-    else 
+    if self.game_type == 'hvh'
       player2 = Human.find(self.player2_id)
+    else 
+      player2 = Computer.find(self.player2_id)
     end
     return player2
   end
@@ -95,7 +95,7 @@ class Game < ApplicationRecord
   end
 
   def game_is_over(board) #returns boolean if either winner or tie
-    self.someone_wins(board) || self.tie(board)
+    someone_wins(board) || tie(board)
   end
 
   def winner(board) #returns winner or nil
@@ -113,7 +113,7 @@ class Game < ApplicationRecord
   def as_json
     {
       id: id,
-      created_at: created_at,
+      # created_at: created_at,
       board_id: board_id,
       board: board,
       game_type: game_type,

@@ -74,7 +74,7 @@ class Computer < ApplicationRecord
     end
     # # Evaluate ALL possibilities -- IF opposite player could win, block the spot
     spaces.each do |available_space|
-      board[available_space.to_i] = game.opposite_player(self).symbol
+      board[available_space.to_i] = opposite_player(self.symbol) # changed from game.opposite_player(self).symbol
       if game.winner(board) == game.opposite_player(self)
         spot = available_space.to_i
         board[available_space.to_i] = available_space.to_s
