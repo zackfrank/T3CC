@@ -113,7 +113,7 @@ class Game < ApplicationRecord
   def as_json
     {
       id: id,
-      # created_at: created_at,
+      created_at: created_at,
       board_id: board_id,
       board: board,
       game_type: game_type,
