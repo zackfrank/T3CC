@@ -18,9 +18,9 @@ class V1::GamesController < ApplicationController
 
     game.player_setup(@player1, @player2, params[:names], params[:who_is_x])
 
-    if params[:first].class == Computer
-      update(params)
-    end
+    # if params[:first].class == Computer
+    #   update(params)
+    # end
     
     render json: game.as_json
   end

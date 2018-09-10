@@ -17,6 +17,8 @@ class Computer < ApplicationRecord
 
   def selected_response(game)
     if game.board.available_spaces.length == 8
+      # available spaces is 8 rather than 9 because this method will always be called
+      # after the first move is made, in the as_json when sending data back to frontend
       response = "Here we go!"
     elsif game.game_is_over(game.board)
       response = game_over_message(game)
@@ -72,7 +74,7 @@ class Computer < ApplicationRecord
         board[available_space.to_i] = available_space.to_s
       end
     end
-    # # Evaluate ALL possibilities -- IF opposite player could win, block the spot
+    # Evaluate ALL possibilities -- IF opposite player could win, block the spot
     spaces.each do |available_space|
       board[available_space.to_i] = opposite_player(self.symbol) # changed from game.opposite_player(self).symbol
       if game.winner(board) == game.opposite_player(self)
@@ -159,10 +161,9 @@ class Computer < ApplicationRecord
     end
   end
 
-  def computer_move_description(spot)
-    if !game_is_over(@board) && !tie(@board)
-      puts "#{self.name}: I took the #{spots[spot]} spot."
-    end
-  end
+  # not used yet
+  # def computer_move_description(_spot)
+  #   "I took the (insert spot description from hash) spot."
+  # end
 
 end
