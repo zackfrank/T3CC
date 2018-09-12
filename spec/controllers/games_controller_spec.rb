@@ -78,42 +78,96 @@ RSpec.describe V1::GamesController, type: :controller do
 
   describe "PATCH update" do
 
-    before(:all) do
+    before(:each) do
       @board = Board.new
       @board.setup
       @board.save
-
-      @game = Game.new
-      @game.board_id = @board.id
-      @game.save
     end
 
-    # it "makes player1 (human) move on 'hvh'" do
+    it "makes human move on 'hvh'" do
+      post :create, :params => {
+        :game_type => 'hvh', 
+        :board_id => @board.id, 
+        :names => ["Fred", "George"], 
+        :who_is_x => 'player2', 
+      }
+      patch :update, params: 
+      {
+        id: Game.last.id, 
+        player: {
+          id: Game.last.player2.id
+          }, 
+        space: 4
+      }
+      expect(Game.last.board[4]).to eq("X")
+    end
+
+    it "makes computer move on 'Easy' 'hvc'" do
+      post :create, :params => {
+        :game_type => 'hvc', 
+        :level => 'Easy',
+        :board_id => @board.id, 
+        :names => ["Hector", "Isaac"], 
+        :who_is_x => 'player1', 
+      }
+      patch :update, params: 
+      {
+        id: Game.last.id, 
+        player: {
+          id: Game.last.player2.id
+          }
+      }
+      expect(Game.last.board.spaces_array.include? "O").to eq(true)
+    end
+
+    it "makes first computer move on space 4 on 'Medium' 'hvc'" do
+      post :create, :params => {
+        :game_type => 'hvc', 
+        :level => 'Medium',
+        :board_id => @board.id, 
+        :names => ["Hector", "Isaac"], 
+        :who_is_x => 'player1', 
+      }
+      patch :update, params: 
+      {
+        id: Game.last.id, 
+        player: {
+          id: Game.last.player2.id
+          }
+      }
+      expect(Game.last.board[4]).to eq("O")
+    end
+
+    # it "makes computer move to block human from winning on 'Medium' 'hvc'" do
     #   post :create, :params => {
-      #   :game_type => 'cvc', 
-      #   :level => 'Medium',
-      #   :board_id => @board.id, 
-      #   :names => ["David", "Elliot"], 
-      #   :who_is_x => 'player2', 
-      #   :first => 'player2'
-      # }
-    #   patch :update, :params => {
-    #     :id => @game.id, 
+    #     :game_type => 'hvc', 
+    #     :level => 'Medium',
     #     :board_id => @board.id, 
-    #     :names => ["Zack", "Daniel"], 
+    #     :names => ["Hector", "Isaac"], 
     #     :who_is_x => 'player1', 
-    #     :first => 'player1'
     #   }
-    #   expect(Game.last.game_type).to eq('hvh')
-    #   expect(Game.last.board_id).to eq(@board.id)
-    #   expect(Game.last.player1.name).to eq("Zack")
-    #   expect(Game.last.player2.name).to eq("Daniel")
-    #   expect(Game.last.player1.symbol).to eq("X")
-    #   expect(Game.last.player2.symbol).to eq("O")
-    #   expect(Human.second_to_last.id).to eq(Game.last.player1_id)
-    #   expect(Human.last.id).to eq(Game.last.player2_id)
-    #   expect(Human.last.game_id).to eq(Game.last.id)
-    #   expect(Human.second_to_last.game_id).to eq(Game.last.id)
+    #   patch :update, params: 
+    #   {
+    #     id: Game.last.id, 
+    #     player: {id: Human.last.id},
+    #     space: 0
+    #   }
+    #   # patch :update, params: 
+    #   # {
+    #   #   id: Game.last.id, 
+    #   #   player: {
+    #   #     id: Game.last.player1.id
+    #   #     },
+    #   #   space: 1
+    #   # }
+    #   # patch :update, params: 
+    #   # {
+    #   #   id: Game.last.id, 
+    #   #   player: {
+    #   #     id: Game.last.player2.id
+    #   #     }
+    #   # }
+    #   expect(Game.last.board.spaces_array).to eq("O")
     # end
 
   end

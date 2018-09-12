@@ -55,7 +55,7 @@
     <!-- End of Modal -->
 
     <!-- Names Modal -->
-    <div id="modal" class="modal" v-if="(gameType === 'hvh' || (gameType === 'hvc' && difficultyLevel)) && !names">
+    <div id="modal" class="modal" v-if="(gameType === 'hvh' || (gameType === 'hvc' && difficultyLevel)) && !namesSubmitted">
       <div class="modal-content">
         <h2>Please Enter Name(s)</h2>
         <label for="player1name">Player 1 Name:</label>
@@ -71,7 +71,7 @@
     <!-- End of Modal -->
 
     <!-- Choose Symbol Modal -->
-    <div id="modal" class="modal" v-if="(gameType && difficultyLevel && names && !player1.symbol) || (gameType === 'cvc' && difficultyLevel && !player1.symbol) || (gameType === 'hvh' && names && !player1.symbol)">
+    <div id="modal" class="modal" v-if="(gameType && difficultyLevel && namesSubmitted && !player1.symbol) || (gameType === 'cvc' && difficultyLevel && !player1.symbol) || (gameType === 'hvh' && namesSubmitted && !player1.symbol)">
       <div class="modal-content">
         <h2>Please Choose Symbol for {{player1.name}}</h2>
         <h3>Choose from the options below...</h3>
@@ -86,12 +86,12 @@
     <!-- End of Modal -->
 
     <!-- Who Goes First Modal -->
-    <div id="modal" class="modal" v-if="names && player1.name && !first && player1.symbol">
+    <div id="modal" class="modal" v-if="namesSubmitted && player1.name && !firstPlayerName && player1.symbol">
       <div class="modal-content">
         <h2>Please Choose Who Goes First</h2>
         <h3>Choose from the options below...</h3>
-        <label for="first">Who will go first:</label>
-        <select name="first" v-model="first">
+        <label for="firstPlayer">Who will go first:</label>
+        <select name="firstPlayer" v-model="firstPlayerName">
           <option value="">Choose one...</option>
           <option :value="player1.name">{{player1.name}}</option>
           <option :value="player2.name">{{player2.name}}</option>
@@ -101,18 +101,18 @@
     <!-- End of Modal -->
 
     <!-- Start Game Modal -->
-    <div id="modal" class="modal" v-if="first && !start">
+    <div id="modal" class="modal" v-if="firstPlayerName && !start">
       <div class="modal-content" id="centered-modal">
         <h2>Ready to play?</h2>
         <h3>Here we go...</h3>
-        <p>{{first}} goes first</p>
+        <p>{{firstPlayerName}} goes first</p>
         <button @click="startGame()">START</button>
       </div>
     </div>
     <!-- End of Modal -->
 
     <!-- Winner Modal -->
-    <div id="modal" class="modal" v-if="game.winner">
+    <div id="modal" class="modal" v-if="winner">
       <div class="modal-content" id="centered-modal">
         <h2>*** We Have a Winner! ***</h2>
         <h3>Congratulations {{game.winner.name}}</h3>
@@ -123,7 +123,7 @@
     <!-- End of Modal -->
 
     <!-- Tie Modal -->
-    <div id="modal" class="modal" v-if="game.tie">
+    <div id="modal" class="modal" v-if="tie">
       <div class="modal-content" id="centered-modal">
         <h2>*** Tie Game ***</h2>
         <button @click="rematch()">Rematch!</button>
