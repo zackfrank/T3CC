@@ -388,7 +388,7 @@ RSpec.describe Game, type: :model do
 
 # ~~~ Expedited minimax moves (hard-coded) ~~~
 
-  it "makes first computer move on Hard level, computer takes 8 on empty board" do
+  it "makes first computer move on Hard level, computer takes a corner on empty board" do
     board = Board.create
     game = Game.create(board_id: board.id, difficulty_level: "Hard", game_type: 'hvc')
     game.board.setup
@@ -398,7 +398,7 @@ RSpec.describe Game, type: :model do
     game.player2_id = player2.id
     game.save
     game.make_computer_move(player2)
-    expect(game.board[8]).to eq("O")
+    expect(game.board.corners.include? "O").to eq(true)
   end
 
   it "computer makes second move on Hard level, if center is taken computer takes any corner" do

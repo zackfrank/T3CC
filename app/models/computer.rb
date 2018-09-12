@@ -104,10 +104,10 @@ class Computer < ApplicationRecord
 
   def expedite_first_minimax_spot(board)
     if board.available_spaces.length == 9
-      return 8
+      return board.corners[rand(0..3)]
     elsif board.available_spaces.length == 8
       if board.center_taken
-        return board.corners[rand(0..3)].to_i
+        return board.corners[rand(0..3)]
       elsif board.corner_taken
         return 4
       elsif board.edge_taken
@@ -165,5 +165,15 @@ class Computer < ApplicationRecord
   # def computer_move_description(_spot)
   #   "I took the (insert spot description from hash) spot."
   # end
+
+  def as_json
+    {
+      id: id,
+      game_id: game_id,
+      name: name,
+      symbol: symbol,
+      player_type: "Computer"
+    }
+  end
 
 end

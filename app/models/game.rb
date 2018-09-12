@@ -119,11 +119,11 @@ class Game < ApplicationRecord
       game_type: game_type,
       computer_response: player2.class == Computer ? player2.selected_response(self) : nil,
       difficulty_level: difficulty_level,
-      player1: player1,
-      player2: player2,
-      winner: winner(board),
+      player1: player1.as_json,
+      player2: player2.as_json,
+      winner: winner(board).as_json,
       tie: tie(board),
-      next_player: next_player
+      next_player: next_player.as_json
     }
   end
 

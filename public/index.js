@@ -89,11 +89,8 @@ var HomePage = {
           this.player2 = response.data.player2;
           this.message = this.firstPlayerName + ", make your first move!";
           if (this.firstPlayerName === this.player1.name) {
-            console.log("this.firstPlayerName === this.player1.name");
             this.currentPlayer = response.data.player1;
-            console.log(response.data.player1);
           } else {
-            console.log("this.firstPlayerName: " + this.firstPlayer.name);
             this.currentPlayer = response.data.player2;
             if (this.gameType === 'hvc') {
               this.submitMove(null);
@@ -185,92 +182,40 @@ var HomePage = {
     submitMove: function(space) {
       this.moveAllowed = false;
 
+      // ----------- To account for minimax processing time ------------
+      if (this.difficultyLevel === "Hard") {
+        this.message = this.player2.name + "'s turn!";
+        this.computerResponse = "Computer: Hmmm... let me think.";
+      }
+      // ---------------------------------------------------------------
+
       var params = {
         player: this.currentPlayer,
         space: space
       };
-      
+
       axios.patch("v1/games/" + this.game.id, params).then(
         function(response) {
           this.board = response.data.board;
           this.game = response.data;
 
           if (this.gameType === 'hvh') {
-            this.processHvhMove(response.data);
+            this.processHumanVsHumanMove(response.data);
             this.printMessage();
-          } else if (this.gameType === 'hvc' && this.difficultyLevel === 'Easy') {
+          } else if (this.gameType === 'hvc') {
             this.message = this.player2.name + "'s turn!";
-            this.processEasyMove(response.data);
-          } else if (this.gameType === 'hvc' && this.difficultyLevel === 'Medium') {
-            this.message = this.player2.name + "'s turn!";
-            this.processMediumMove(response.data);      
-          } else if (this.gameType === 'hvc' && this.difficultyLevel === 'Hard') {
-            this.message = this.player2.name + "'s turn!";
-            this.processHardMove(response.data);
+            this.processHumanVsComputerMove(response.data);
           }
 
         }.bind(this)
       );
-
-      // var params = {
-      //   player: this.currentPlayer,
-      //   space: space
-      // };
-
-      // if (this.difficultyLevel === "Hard" && this.gameType === "hvc") {
-      //   this.message = "Computer's Turn";
-      //   this.computerResponse = "Computer: Hmmm, let me think about this...";
-      // }
-
-      // axios.patch("v1/games/" + this.game.id, params).then(
-      //   function(response) {
-      //     this.board = response.data.board;
-
-      //     // If hvc, we have a computer move returned after every submitted human move
-      //     if (this.gameType === 'hvc' && (response.data.winner.id !== this.player1.id) && ((response.data.tie && (this.firstPlayer === this.player2.name)) || !response.data.tie)) {
-      //       // Human move not allowed while computer is 'thinking'
-      //       this.moveAllowed = false;
-      //       // Stall computer move for 1.5sec to make it more 'realistic' if Easy or Medium (Hard takes too much time)
-      //       setTimeout(function() {
-      //         this.registerComputerMove();
-      //       }.bind(this), 1500);
-      //     }
-
-      //     // If final move is made by computer, stall ending the game to correspond
-      //     if (((response.data.winner.id === this.player2.id) || (response.data.tie && (this.firstPlayer === this.player2.name))) && !this.moveAllowed) {
-      //       // Stall AI updates unless difficulty level is Hard
-      //       setTimeout(function() {
-      //         this.game = response.data;
-      //         this.message = "Game over!";
-      //         this.computerResponse = "Computer: " + this.game.computer_response;
-      //       }.bind(this), 1500);
-      //     } else {
-      //       this.game = response.data;
-      //       if (response.data.winner || response.data.tie) {
-      //         // End game if game's over
-      //         this.message = "Game Over!";
-      //         this.computerResponse = "Computer: " + this.game.computer_response;
-      //       } else {
-      //         // Switch player messaging if game continues (maybe separate out messaging function)
-      //         if (this.game.game_type === 'hvh') { 
-      //           this.message = this.currentPlayer.name + "'s turn!";
-      //         } else {
-      //           // this doesn't work with no delay
-      //           // add logic to say player 1's turn after move is made
-      //           this.message = "Computer's Turn";
-      //           this.computerResponse = "Computer: " + this.game.computer_response;
-      //         }
-      //       }
-      //     }
-      //   }.bind(this)
-      // );
     },
-    processHvhMove: function(game) {
+    processHumanVsHumanMove: function(game) {
       this.currentPlayer = game.next_player;
       this.checkForAndProcessGameOver();
       this.moveAllowed = true;
     },
-    processEasyMove: function(game) {
+    processHumanVsComputerMove: function(game) {
       this.computerResponse = "Computer: " + game.computer_response;
       setTimeout(function() {
         this.registerComputerMove();
@@ -280,26 +225,6 @@ var HomePage = {
       this.checkForAndProcessGameOver();
       this.printMessage();
     },
-    // processMediumMove: function(game) {
-    //   this.computerResponse = "Computer: " + game.computer_response;
-    //   setTimeout(function() {
-    //     this.registerComputerMove();
-    //     this.currentPlayer = game.next_player;
-    //     this.moveAllowed = true;
-    //   }.bind(this), 1500);
-    //   this.checkForAndProcessGameOver();
-    //   this.printMessage();
-    // },
-    // processHardMove: function(game) {
-    //   this.computerResponse = "Computer: " + game.computer_response;
-    //   setTimeout(function() {
-    //     this.registerComputerMove();
-    //     this.currentPlayer = game.next_player;
-    //     this.moveAllowed = true;
-    //   }.bind(this), 1500);
-    //   this.checkForAndProcessGameOver();
-    //   this.printMessage();
-    // },
     registerComputerMove: function() {
       if (this.board[0] === this.player2.symbol && this.topLeft === "") {
         this.topLeft = this.player2.symbol;
@@ -323,7 +248,7 @@ var HomePage = {
     },
     printMessage: function() {
       if (this.game.winner || this.game.tie) {
-        if (this.gameType !== 'hvh' && this.computerEndsGame()) {
+        if (this.computerEndsGame()) {
           setTimeout(function() {
             this.message = "Game Over!";
           }.bind(this), 1600);
