@@ -28,6 +28,24 @@ class Game < ApplicationRecord
     self.save
   end
 
+  def update(player, space)
+    if self.game_type == 'hvh'
+      self.make_human_move(player, space)
+      self.switch_player(player) # sends next 'current player' to front end
+    elsif self.game_type == 'hvc'
+      if player == player1
+        self.make_human_move(player, space)
+      end
+      unless self.game_is_over(self.board)
+        self.make_computer_move(player2)
+        self.switch_player(player2) # switch back to player 1
+      end
+    elsif self.game_type == 'cvc'
+      self.make_computer_move(player)
+      self.switch_player(player)
+    end
+  end
+
   def player1
     if self.game_type == 'cvc'
       player1 = Computer.find(self.player1_id)
