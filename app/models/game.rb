@@ -28,7 +28,10 @@ class Game < ApplicationRecord
     self.save
   end
 
-  def update(player, space)
+  def update(params)
+    params[:player][:id] == player1.id ? player = player1 : player = player2 #identify player
+    space = params[:space]
+
     if self.game_type == 'hvh'
       self.make_human_move(player, space)
       self.switch_player(player) # sends next 'current player' to front end
