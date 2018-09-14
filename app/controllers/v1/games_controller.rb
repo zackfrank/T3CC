@@ -18,10 +18,6 @@ class V1::GamesController < ApplicationController
 
     game.player_setup(@player1, @player2, params[:names], params[:who_is_x])
 
-    # if params[:first].class == Computer
-    #   update(params)
-    # end
-    
     render json: game.as_json
   end
 
@@ -43,11 +39,15 @@ class V1::GamesController < ApplicationController
         game.switch_player(game.player2) # switch back to player 1
       end
     elsif game.game_type == 'cvc'
-      # make all moves and send to frontend to play out OR make one move at a time?
-      
+      computer_move = game.make_computer_move(player)
+      game.switch_player(player)
     end
 
-    render json: game.as_json
+    if game.game_type == 'cvc'
+      render json: {game: game.as_json, computerMove: computer_move}
+    else
+      render json: game.as_json
+    end
   end
 
 end

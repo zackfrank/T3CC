@@ -65,12 +65,13 @@ class Game < ApplicationRecord
 
   def make_computer_move(player)
     if difficulty_level == 'Easy'
-      player.easy_eval_board(self)
+      spot = player.easy_eval_board(self)
     elsif difficulty_level == 'Medium'
-      player.medium_eval_board(self)
+      spot = player.medium_eval_board(self)
     else
-      player.hard_eval_board(self)
+      spot = player.hard_eval_board(self)
     end
+    return spot
   end
 
   def winning_possibilities(b) #possible rows, columns, and diagonals for a win

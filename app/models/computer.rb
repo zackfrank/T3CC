@@ -45,6 +45,7 @@ class Computer < ApplicationRecord
     spot = spaces[rand(0...max)].to_i
     board[spot] = self.symbol
     board.save
+    return spot
   end
 
   def medium_eval_board(game)
@@ -58,6 +59,7 @@ class Computer < ApplicationRecord
       board[spot] = self.symbol
     end
     board.save
+    return spot
   end
 
   def get_best_medium_move(game)
@@ -100,6 +102,7 @@ class Computer < ApplicationRecord
     end
     board[@choice] = self.symbol
     board.save
+    return @choice
   end
 
   def expedite_first_minimax_spot(board)
@@ -160,6 +163,18 @@ class Computer < ApplicationRecord
       return scores[min_score_index]
     end
   end
+
+  # def computer_move(old_board, new_board)
+  #   index = 0
+  #   9.times do 
+  #     if old_board[index] != new_board[index]
+  #       space = index + 1
+  #       return space
+  #     end
+  #     index += 1
+  #   end
+  # end
+
 
   # not used yet
   # def computer_move_description(_spot)

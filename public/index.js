@@ -90,11 +90,16 @@ var HomePage = {
           this.message = this.firstPlayerName + ", make your first move!";
           if (this.firstPlayerName === this.player1.name) {
             this.currentPlayer = response.data.player1;
+            if (this.gameType === 'cvc') {
+              this.cvcGameplay();
+            }
           } else {
             this.currentPlayer = response.data.player2;
             if (this.gameType === 'hvc') {
               this.submitMove(null);
               this.currentPlayer = this.player1;
+            } else if (this.gameType === 'cvc') {
+              this.cvcGameplay();
             }
           }
         }.bind(this)
@@ -205,7 +210,7 @@ var HomePage = {
           } else if (this.gameType === 'hvc') {
             this.message = this.player2.name + "'s turn!";
             this.processHumanVsComputerMove(response.data);
-          }
+          } 
 
         }.bind(this)
       );
@@ -248,7 +253,7 @@ var HomePage = {
     },
     printMessage: function() {
       if (this.game.winner || this.game.tie) {
-        if (this.computerEndsGame()) {
+        if (this.computerEndsHvcGame()) {
           setTimeout(function() {
             this.message = "Game Over!";
           }.bind(this), 1600);
@@ -266,7 +271,7 @@ var HomePage = {
       }
     },
     checkForAndProcessGameOver: function() {
-      if (this.computerEndsGame()) {
+      if (this.computerEndsHvcGame()) {
         setTimeout(function() {
           this.winner = this.game.winner;
           this.tie = this.game.tie;          
@@ -276,9 +281,59 @@ var HomePage = {
         this.tie = this.game.tie;
       }
     },
-    computerEndsGame: function() {
-      if (this.gameType !== 'hvh' && (this.game.winner.id === this.game.player2.id || (this.game.tie && this.firstPlayerName === this.player2.name))) {
+    computerEndsHvcGame: function() {
+      if (this.gameType === 'hvc' && (this.game.winner.id === this.game.player2.id || (this.game.tie && this.firstPlayerName === this.player2.name))) {
         return true;
+      }
+    },
+    cvcGameplay: function() {
+      this.moveAllowed = false;
+
+      let params = {
+        player: this.currentPlayer,
+      };
+
+      axios.patch("v1/games/" + this.game.id, params).then(
+        function(response) {
+          console.log("Computer move: ", response.data.computerMove);
+          this.board = response.data.game.board;
+          this.game = response.data.game;
+          setTimeout(function() {
+            this.makeComputerMove(this.currentPlayer.symbol, response.data.computerMove);
+            this.currentPlayer = response.data.game.next_player;
+            this.computerResponse = this.currentPlayer.name + ": " + response.data.game.computer_response;
+            if (response.data.game.winner || response.data.game.tie) {
+              this.message = "Game Over!";
+            } else {
+              this.message = this.currentPlayer.name + "'s turn!";
+            }
+            if (!response.data.game.winner && !response.data.game.tie) {
+              this.cvcGameplay();
+            }
+            this.checkForAndProcessGameOver();
+          }.bind(this), 1500);
+        }.bind(this)
+      );
+    },
+    makeComputerMove: function(symbol, spot) {
+      if (spot === 0) {
+        this.topLeft = symbol;
+      } else if (spot === 1) {
+        this.topCenter = symbol;
+      } else if (spot === 2) {
+        this.topRight = symbol;
+      } else if (spot === 3) {
+        this.middleLeft = symbol;
+      } else if (spot === 4) {
+        this.center = symbol;
+      } else if (spot === 5) {
+        this.middleRight = symbol;
+      } else if (spot === 6) {
+        this.bottomLeft = symbol;
+      } else if (spot === 7) {
+        this.bottomCenter = symbol;
+      } else if (spot === 8) {
+        this.bottomRight = symbol;
       }
     },
     rematch: function() {
