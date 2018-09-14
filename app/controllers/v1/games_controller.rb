@@ -39,15 +39,11 @@ class V1::GamesController < ApplicationController
         game.switch_player(game.player2) # switch back to player 1
       end
     elsif game.game_type == 'cvc'
-      computer_move = game.make_computer_move(player)
+      game.make_computer_move(player)
       game.switch_player(player)
     end
 
-    if game.game_type == 'cvc'
-      render json: {game: game.as_json, computerMove: computer_move}
-    else
-      render json: game.as_json
-    end
+    render json: game.as_json
   end
 
 end

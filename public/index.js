@@ -223,33 +223,12 @@ var HomePage = {
     processHumanVsComputerMove: function(game) {
       this.computerResponse = "Computer: " + game.computer_response;
       setTimeout(function() {
-        this.registerComputerMove();
+        this.makeComputerMove(this.player2.symbol, game.computer_move);
         this.moveAllowed = true;
         this.currentPlayer = game.next_player;
       }.bind(this), 1500);
       this.checkForAndProcessGameOver();
       this.printMessage();
-    },
-    registerComputerMove: function() {
-      if (this.board[0] === this.player2.symbol && this.topLeft === "") {
-        this.topLeft = this.player2.symbol;
-      } else if (this.board[1] === this.player2.symbol && this.topCenter === "") {
-        this.topCenter = this.player2.symbol;
-      } else if (this.board[2] === this.player2.symbol && this.topRight === "") {
-        this.topRight = this.player2.symbol;
-      } else if (this.board[3] === this.player2.symbol && this.middleLeft === "") {
-        this.middleLeft = this.player2.symbol;
-      } else if (this.board[4] === this.player2.symbol && this.center === "") {
-        this.center = this.player2.symbol;
-      } else if (this.board[5] === this.player2.symbol && this.middleRight === "") {
-        this.middleRight = this.player2.symbol;
-      } else if (this.board[6] === this.player2.symbol && this.bottomLeft === "") {
-        this.bottomLeft = this.player2.symbol;
-      } else if (this.board[7] === this.player2.symbol && this.bottomCenter === "") {
-        this.bottomCenter = this.player2.symbol;
-      } else if (this.board[8] === this.player2.symbol && this.bottomRight === "") {
-        this.bottomRight = this.player2.symbol;
-      }
     },
     printMessage: function() {
       if (this.game.winner || this.game.tie) {
@@ -295,19 +274,19 @@ var HomePage = {
 
       axios.patch("v1/games/" + this.game.id, params).then(
         function(response) {
-          console.log("Computer move: ", response.data.computerMove);
-          this.board = response.data.game.board;
-          this.game = response.data.game;
+          console.log("Computer move: ", response.data.computer_move);
+          this.board = response.data.board;
+          this.game = response.data;
           setTimeout(function() {
-            this.makeComputerMove(this.currentPlayer.symbol, response.data.computerMove);
-            this.currentPlayer = response.data.game.next_player;
-            this.computerResponse = this.currentPlayer.name + ": " + response.data.game.computer_response;
-            if (response.data.game.winner || response.data.game.tie) {
+            this.makeComputerMove(this.currentPlayer.symbol, response.data.computer_move);
+            this.currentPlayer = response.data.next_player;
+            this.computerResponse = this.currentPlayer.name + ": " + response.data.computer_response;
+            if (response.data.winner || response.data.tie) {
               this.message = "Game Over!";
             } else {
               this.message = this.currentPlayer.name + "'s turn!";
             }
-            if (!response.data.game.winner && !response.data.game.tie) {
+            if (!response.data.winner && !response.data.tie) {
               this.cvcGameplay();
             }
             this.checkForAndProcessGameOver();

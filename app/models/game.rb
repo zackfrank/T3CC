@@ -65,13 +65,16 @@ class Game < ApplicationRecord
 
   def make_computer_move(player)
     if difficulty_level == 'Easy'
-      spot = player.easy_eval_board(self)
+      @computer_move = player.easy_eval_board(self)
     elsif difficulty_level == 'Medium'
-      spot = player.medium_eval_board(self)
+      @computer_move = player.medium_eval_board(self)
     else
-      spot = player.hard_eval_board(self)
+      @computer_move = player.hard_eval_board(self)
     end
-    return spot
+  end
+
+  def computer_move
+    @computer_move
   end
 
   def winning_possibilities(b) #possible rows, columns, and diagonals for a win
@@ -118,13 +121,14 @@ class Game < ApplicationRecord
       board_id: board_id,
       board: board,
       game_type: game_type,
-      computer_response: player2.class == Computer ? player2.selected_response(self) : nil,
+      computer_response: game_type != 'hvh' ? player2.selected_response(self) : nil,
       difficulty_level: difficulty_level,
       player1: player1.as_json,
       player2: player2.as_json,
       winner: winner(board).as_json,
       tie: tie(board),
-      next_player: next_player.as_json
+      next_player: next_player.as_json,
+      computer_move: computer_move
     }
   end
 
