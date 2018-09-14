@@ -102,7 +102,7 @@ class Computer < ApplicationRecord
     end
     board[@choice] = self.symbol
     board.save
-    return @choice
+    return @choice.to_i
   end
 
   def expedite_first_minimax_spot(board)
