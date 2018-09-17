@@ -45,11 +45,45 @@ var HomePage = {
     );
   },
   methods: {
-    computerNames: function() {
-      if (this.gameType === 'cvc') {
-        this.player1.name = 'Computer 1';
-        this.player2.name = 'Computer 2';
+    playerSetup: function() {
+      if (this.gameType === 'hvh') {
+        axios.post("v1/humen").then(
+          function(response) {
+            this.player1 = response.data;
+            console.log("Create human response: ", response.data);
+          }.bind(this)
+        );
+        axios.post("v1/humen").then(
+          function(response) {
+            console.log("Create human response #2: ", response.data);
+            this.player2 = response.data;
+          }.bind(this)
+        );
+      } else if (this.gameType === 'hvc') {
+        axios.post("v1/humen").then(
+          function(response) {
+            this.player1 = response.data;
+          }.bind(this)
+        );
+        axios.post("v1/computers").then(
+          function(response) {
+            this.player2 = response.data;
+          }.bind(this)
+        );       
+      } else if (this.gameType === 'cvc') {
         this.namesSubmitted = true;
+        axios.post("v1/computers").then(
+          function(response) {
+            this.player1 = response.data;
+            this.player1.name = "Computer 1";
+          }.bind(this)
+        );
+        axios.post("v1/computers").then(
+          function(response) {
+            this.player2 = response.data;
+            this.player2.name = "Computer 2";
+          }.bind(this)
+        );
       }
     },
     submitNames: function() {
@@ -79,8 +113,11 @@ var HomePage = {
         level: this.difficultyLevel,
         names: [this.player1.name, this.player2.name],
         who_is_x: whoIsX,
-        board_id: this.board.id
+        board_id: this.board.id,
+        player1: this.player1,
+        player2: this.player2
       };
+      console.log("Player1: ", this.player1);
       axios.post("v1/games", params).then(
         function(response) {
           this.start = true; // clear modal

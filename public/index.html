@@ -28,7 +28,7 @@
         <h2>Welcome to Tic Tac Toe!</h2>
         <h3>Please choose from the options below...</h3>
         <label for="game-type">Game Type:</label>
-        <select name="game-type" v-model="gameType" v-on:change="computerNames()">
+        <select name="game-type" v-model="gameType" v-on:change="playerSetup()">
           <option value="">Choose one...</option>
           <option value="hvh">Human vs. Human</option>
           <option value="hvc">Human vs. Computer</option>

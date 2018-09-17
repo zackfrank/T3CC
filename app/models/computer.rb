@@ -1,6 +1,7 @@
 class Computer < ApplicationRecord
-  belongs_to :game
-  validates :game, presence: false
+  belongs_to :game, required: false
+  validates :name, presence: false
+  validates :symbol, presence: false
  
   def responses
     [

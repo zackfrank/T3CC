@@ -1,8 +1,7 @@
 class V1::ComputersController < ApplicationController
 
   def create
-    computer = Computer.new
-    computer.save
+    computer = Computer.create
     render json: computer.as_json
   end
 

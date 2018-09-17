@@ -12,11 +12,11 @@ Rails.application.routes.draw do
     patch "/boards/:id" => "boards#update"
     delete "/boards/:id" => "boards#destroy"
 
-    get "/humans" => "humans#index"
-    post "/humans" => "humans#create"
-    get "/humans/:id" => "humans#show"
-    patch "/humans/:id" => "humans#update"
-    delete "/humans/:id" => "humans#destroy"
+    get "/humen" => "humen#index"
+    post "/humen" => "humen#create"
+    get "/humen/:id" => "humen#show"
+    patch "/humen/:id" => "humen#update"
+    delete "/humen/:id" => "humen#destroy"
 
     get "/computers" => "computers#index"
     post "/computers" => "computers#create"

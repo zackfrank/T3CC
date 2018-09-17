@@ -1,8 +1,7 @@
 class V1::HumenController < ApplicationController
 
   def create
-    human = Human.new
-    human.save
+    human = Human.create
     render json: human.as_json
   end
 
