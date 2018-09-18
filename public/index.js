@@ -50,12 +50,10 @@ var HomePage = {
         axios.post("v1/humen").then(
           function(response) {
             this.player1 = response.data;
-            console.log("Create human response: ", response.data);
           }.bind(this)
         );
         axios.post("v1/humen").then(
           function(response) {
-            console.log("Create human response #2: ", response.data);
             this.player2 = response.data;
           }.bind(this)
         );
@@ -117,7 +115,6 @@ var HomePage = {
         player1: this.player1,
         player2: this.player2
       };
-      console.log("Player1: ", this.player1);
       axios.post("v1/games", params).then(
         function(response) {
           this.start = true; // clear modal
@@ -311,7 +308,6 @@ var HomePage = {
 
       axios.patch("v1/games/" + this.game.id, params).then(
         function(response) {
-          console.log("Computer move: ", response.data.computer_move);
           this.board = response.data.board;
           this.game = response.data;
           setTimeout(function() {

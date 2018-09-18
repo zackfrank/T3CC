@@ -7,119 +7,37 @@ class Console
     set_up
   end
 
-  def animation # fold this code up!! 
-    system "clear"
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    puts "                                                        "
-    puts "|  Welcome to Tic Tac Toe by Command Line Games, Inc!  |"
-    puts "                                                        "
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    sleep(0.3)
-    system "clear"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    puts "|                                                      |"
-    puts "   Welcome to Tic Tac Toe by Command Line Games, Inc!   "
-    puts "|                                                      |"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    sleep(0.3)
-    system "clear"
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    puts "                                                        "
-    puts "|  Welcome to Tic Tac Toe by Command Line Games, Inc!  |"
-    puts "                                                        "
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    sleep(0.3)
-    system "clear"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    puts "|                                                      |"
-    puts "   Welcome to Tic Tac Toe by Command Line Games, Inc!   "
-    puts "|                                                      |"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    sleep(0.3)
-    system "clear"
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    puts "                                                        "
-    puts "|  Welcome to Tic Tac Toe by Command Line Games, Inc!  |"
-    puts "                                                        "
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    sleep(0.3)
-    system "clear"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    puts "|                                                      |"
-    puts "   Welcome to Tic Tac Toe by Command Line Games, Inc!   "
-    puts "|                                                      |"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    sleep(0.3)
-    system "clear"
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    puts "                                                        "
-    puts "|  Welcome to Tic Tac Toe by Command Line Games, Inc!  |"
-    puts "                                                        "
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    sleep(0.3)
-    system "clear"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    puts "|                                                      |"
-    puts "   Welcome to Tic Tac Toe by Command Line Games, Inc!   "
-    puts "|                                                      |"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    sleep(0.3)
-    system "clear"
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    puts "                                                        "
-    puts "|  Welcome to Tic Tac Toe by Command Line Games, Inc!  |"
-    puts "                                                        "
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    sleep(0.3)
-    system "clear"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    puts "|                                                      |"
-    puts "   Welcome to Tic Tac Toe by Command Line Games, Inc!   "
-    puts "|                                                      |"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    sleep(0.3)
-    system "clear"
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    puts "                                                        "
-    puts "|  Welcome to Tic Tac Toe by Command Line Games, Inc!  |"
-    puts "                                                        "
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    sleep(0.3)
-    system "clear"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    puts "|                                                      |"
-    puts "   Welcome to Tic Tac Toe by Command Line Games, Inc!   "
-    puts "|                                                      |"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    sleep(0.3)
-    system "clear"
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    puts "                                                        "
-    puts "|  Welcome to Tic Tac Toe by Command Line Games, Inc!  |"
-    puts "                                                        "
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    sleep(0.3)
-    system "clear"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    puts "|                                                      |"
-    puts "   Welcome to Tic Tac Toe by Command Line Games, Inc!   "
-    puts "|                                                      |"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    sleep(0.3)
-    system "clear"
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    puts "                                                        "
-    puts "|  Welcome to Tic Tac Toe by Command Line Games, Inc!  |"
-    puts "                                                        "
-    puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
-    sleep(0.3)
-    system "clear"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    puts "|                                                      |"
-    puts "   Welcome to Tic Tac Toe by Command Line Games, Inc!   "
-    puts "|                                                      |"
-    puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
-    sleep(0.3)
+  def animation
+    def animation_frame1
+      system "clear"
+      puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
+      puts "                                                        "
+      puts "|  Welcome to Tic Tac Toe by Command Line Games, Inc!  |"
+      puts "                                                        "
+      puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
+      sleep(0.3)
+    end
+    def animation_frame2
+      system "clear"
+      puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
+      puts "|                                                      |"
+      puts "   Welcome to Tic Tac Toe by Command Line Games, Inc!   "
+      puts "|                                                      |"
+      puts "+ - - - - - - - - - - - - - - - - - - - - - - - - - - -+"
+      sleep(0.3)
+    end
+    def animation_sequence
+      animation_frame1
+      animation_frame2
+    end
+    animation_sequence
+    animation_sequence
+    animation_sequence
+    animation_sequence
+    animation_sequence
+    animation_sequence
+    animation_sequence
+    animation_sequence
     display_banner
     sleep(0.5)
     puts
@@ -137,16 +55,12 @@ class Console
 
   def set_up
     # animation
-    display_banner
     player_setup
     if @player2['player_type'] == "Computer"
       difficulty_level
     end
-    display_banner
     name_players
-    display_banner
     choose_symbol
-    display_banner
     who_goes_first
     params = {
       game_type: @game_type,
@@ -163,7 +77,6 @@ class Console
     @player2 = @game['player2']
     @first_player == 'player1' ? @current_player = @player1 : @current_player = @player2
     @game_is_over = false
-    display_banner
     # puts "Are you ready?!\n\n"
     # sleep(1.5)
     # puts "Let's play!\n\n"
@@ -178,6 +91,7 @@ class Console
   end
 
   def player_setup
+    display_banner
     game_types = [
       "[1] Human vs. Human",
       "[2] Human vs. Computer",
@@ -213,10 +127,10 @@ class Console
     puts "Great! You chose #{game_types[@choice-1]}"
     puts "[ANY KEY] to continue."
     gets.chomp
-    system "clear"
   end
 
   def difficulty_level
+    display_banner
     puts "Please choose a difficulty level:"
     puts "[1] Easy"
     puts "[2] Medium"
@@ -245,6 +159,7 @@ class Console
   end
 
   def name_players
+    display_banner
     def enter_p1_name
       print "Player 1, please enter your name: "
       name = gets.chomp
@@ -275,6 +190,7 @@ class Console
   end
 
   def choose_symbol
+    display_banner
     print "Please choose the symbol for #{@player1['name']}..."
     puts
     until @player1['symbol'] == "X" || @player1['symbol'] == "O"
@@ -302,6 +218,7 @@ class Console
   end
 
   def who_goes_first
+    display_banner
     puts "Who goes first?"
     puts "[1] #{@player1['name']}"
     puts "[2] #{@player2['name']}"
@@ -326,11 +243,11 @@ class Console
 
   def start_game
     # start by printing the board
-    display_banner
-    puts "#{@current_player['name']}, make your first move!"
-    if (@game_type == 2 && @current_player['player_type'] == "Computer") || @game_type == 3
-      puts "(#{@current_player['name']} is thinking...)"
-    end
+    # display_banner
+    # puts "#{@current_player['name']}, make your first move!"
+    # if (@game_type == 'hvc' && @current_player['player_type'] == "Computer") || @game_type == 'cvc'
+    #   puts "(#{@current_player['name']}: Hmmm let me think...)"
+    # end
     # loop through until the game was won or tied
     if @game_type == 'hvh'
       human_vs_human
@@ -350,94 +267,166 @@ class Console
   end
 
   def human_vs_human
+    display_banner
+    puts "#{@current_player['name']}, make your first move!"
+    print_board
+    get_human_spot
+
     until @game_is_over
+      display_banner
+      pre_board_display
+      update_board
       print_board
       get_human_spot
-      @board = @game['board']
-      unless @game['game_is_over']
-        if @current_player == @player1
-          puts "#{@player1['name']}'s turn."
-        else
-          puts "#{@player2['name']}'s turn."
-        end
-      end
     end
+  end
+
+  def pre_board_display
+    if @game_type == 'hvh'
+      if @game['next_player']
+        puts "#{@current_player['name']} chose: #{@space} - the #{spots[@space]} space."
+        update_current_player
+      end
+      unless @game['game_is_over']
+        puts
+        puts " " * 8 + "#{@current_player['name']}'s turn!"
+      end
+    elsif @game_type == 'hvc'
+      puts "#{@player1['name']} chose: #{@space} - the #{spots[@space]} space."
+      puts " " * 8 + "Computer's turn!"
+    end
+  end
+
+  def update_board
+    @board = @game['board']
+  end
+
+  def update_current_player
+    @current_player = @game['next_player']
   end
 
   def get_human_spot
     @space = nil
     until @space
       puts "Enter [0-8] to choose a spot on the board:"
-      # @space = gets.chomp.to_i
       @space = gets.chomp
-      if @space.to_i.to_s == @space && @space.to_i.between?(0, 8)
-        if @board[@space] == "X" || @board[@space] == "O" 
-          puts "That spot is already taken, choose another spot."
-          @space = nil
-        else
+
+      if user_input_is_valid
+        if space_is_not_taken
           @space = @space.to_i
           params = {
             player: @current_player,
             space: @space
           }
           @game = Unirest.patch("http://localhost:3000/v1/games/#{@game['id']}", parameters: params).body
-          puts "Current Player: #{@current_player}"
           @game_is_over = @game['game_is_over']
-          system "clear"
-          if @game['next_player']
-            puts "#{@current_player['name']} chose: #{@space} - the #{spots[@space]} space."
-          end
-          @current_player = @game['next_player']
+        else
+          puts "That spot is already taken, choose another spot."
+          @space = nil
         end
       else
         print "That is not a valid spot, please try again: "
         @space = nil
       end
     end
+
+    if @game_type == "hvc"
+      @board[@space.to_s] = @player1['symbol']
+    end
+
+  end
+
+  def user_input_is_valid
+    @space.to_i.to_s == @space && @space.to_i.between?(0, 8)
+  end
+
+  def space_is_not_taken
+    @board[@space] != "X" || @board[@space] != "O"
   end
 
   def human_vs_computer
-    print_board
-    if @first_player == 'player2'
-      puts "I took #{@game['computer_move']}, the #{spots[@game['computer_move']]} space."
+    @hvc_game_over = false
+    hvc_first_move
+
+    while true
+      display_banner
+      pre_board_display
       print_board
-      unless @game['game_is_over']
-        puts "Your turn, #{@current_player['name']}."
+      hvc_make_computer_move
+      if @game['winner'] == @player2 || @game['tie']
+        break
+        update_board
+        end_of_game
+      end
+      get_human_spot
+      if @game['winner'] == @player1 || @game['tie']
+        break
+        end_of_game
       end
     end
-    until @game['game_is_over']
-      if @current_player['player_type'] == "Human"
-        get_human_spot
-        if @game['game_is_over']
-          break
-          end_of_game
-        end
-        @board[@space.to_s] = @player1['symbol']
-        print_board
-        puts "Computer: #{@game['computer_response']}"
-        # sleep(3)
-        @board = @game['board']
-        system "clear"
-        puts "I took #{@game['computer_move']}, the #{spots[@game['computer_move']]} space."
-        print_board
-        unless @game['game_is_over']
-          puts "Your turn, #{@current_player['name']}."
-        end
-      end
+  end
+
+  def hvc_first_move
+    if @first_player == 'player2'
+      hvc_computer_makes_first_move
+      get_human_spot
+    else
+      display_banner
+      puts "#{@player1['name']}, make your first move!"
+      print_board
+      get_human_spot
+    end
+  end
+
+  # def is_hvc_game_over?(last_move)
+  #   if @game['tie']
+  #     @hvc_game_over = true
+  #   else
+  #     if last_move == "Human" && @game_is_over && @game['winner'] == @player1
+  #       @hvc_game_over = true
+  #     elsif last_move == "Computer" && @game_is_over && @game['winner'] == @player2
+  #       @hvc_game_over = true
+  #     end
+  #   end
+  # end
+
+  def hvc_computer_makes_first_move
+    params = {
+        player: @player2,
+      }
+    @game = Unirest.patch("http://localhost:3000/v1/games/#{@game['id']}", parameters: params).body
+    
+    update_current_player
+    display_banner
+    puts "Computer, make your first move!"
+    print_board
+
+    hvc_make_computer_move
+  end
+
+  def hvc_make_computer_move
+    if @game['game_is_over']
+      puts "Computer: Looks like this game's about to end..."
+    else
+      puts "Computer: #{@game['computer_response']}"
+    end
+    puts "[Enter] to make computer move"
+    gets.chomp
+
+    display_banner
+    puts "Computer: I took #{@game['computer_move']}, the #{spots[@game['computer_move']]} space."
+    update_board
+    @space = @game['computer_move']
+    print_board
+
+    unless @game['game_is_over']
+      puts "Your turn, #{@player1['name']}."
     end
   end
 
   def computer_vs_computer
-    until game_is_over(@board) || tie(@board)
-      eval_board
-      unless game_is_over(@board) || tie(@board)
-        print_board
-        switch_player
-        puts "#{@current_player['name']}'s turn."
-        puts "[ANY KEY] to continue"
-        gets.chomp
-        system "clear"
-      end
+    until @game['game_is_over']
+
     end
   end
 
@@ -493,24 +482,30 @@ class Console
     system "clear"
     if @game['winner']
       if @game['winner']['symbol'] == 'X'
-        puts "+-----------------------+"
-        puts "|X                     X|"
-        puts "|   *** GAME OVER ***   |"
-        puts "|X                     X|"
-        puts "+-----------------------+"
+        puts "+------------------------------------------------------+"
+        puts "| X                                                  X |"
+        puts "|                  *** GAME OVER ***                   |"
+        puts "| X                                                  X |"
+        puts "+------------------------------------------------------+"
       elsif @game['winner']['symbol'] == 'O'
-        puts "+-----------------------+"
-        puts "|O                     O|"
-        puts "|   *** GAME OVER ***   |"
-        puts "|O                     O|"
-        puts "+-----------------------+"
+        puts "+------------------------------------------------------+"
+        puts "| O                                                  O |"
+        puts "|                  *** GAME OVER ***                   |"
+        puts "| O                                                  O |"
+        puts "+------------------------------------------------------+"
       end
     else
-      puts "+-----------------------+"
-      puts "|X                     O|"
-      puts "|   *** GAME OVER ***   |"
-      puts "|O                     X|"
-      puts "+-----------------------+"
+      puts "+------------------------------------------------------+"
+      puts "| X                                                  O |"
+      puts "|                  *** GAME OVER ***                   |"
+      puts "| O                                                  X |"
+      puts "+------------------------------------------------------+"
+    end
+    @board = @game['board']
+    if @game['winner']
+      puts "#{@game['winner']['name']} took the #{spots[@space]} spot to win!"
+    else
+      puts " " * 9 + "Tie game!"
     end
     print_board
   end
