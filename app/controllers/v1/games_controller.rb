@@ -8,7 +8,7 @@ class V1::GamesController < ApplicationController
   end
 
   def update
-    game = Game.find(params[:id]) # identify game
+    game = Game.find(params[:id])
     game.update(params)
 
     render json: game.as_json

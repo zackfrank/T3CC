@@ -32,7 +32,7 @@ class Game < ApplicationRecord
   end
 
   def update(params)
-    params[:player][:id] == player1.id ? player = player1 : player = player2 #identify player
+    params[:player][:id].to_i == player1.id ? player = player1 : player = player2 #identify player
     space = params[:space]
 
     if self.game_type == 'hvh'
@@ -149,6 +149,7 @@ class Game < ApplicationRecord
       difficulty_level: difficulty_level,
       player1: player1.as_json,
       player2: player2.as_json,
+      game_is_over: game_is_over(board),
       winner: winner(board).as_json,
       tie: tie(board),
       next_player: next_player.as_json,
