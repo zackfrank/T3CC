@@ -54,7 +54,7 @@ class Console
   end
 
   def set_up
-    # animation
+    animation
     player_setup
     if @player2['player_type'] == "Computer"
       difficulty_level
@@ -77,16 +77,16 @@ class Console
     @player2 = @game['player2']
     @first_player == 'player1' ? @current_player = @player1 : @current_player = @player2
     @game_is_over = false
-    # puts "Are you ready?!\n\n"
-    # sleep(1.5)
-    # puts "Let's play!\n\n"
-    # sleep(1)
-    # print "."
-    # sleep(0.3)
-    # print "."
-    # sleep(0.3)
-    # print "."
-    # sleep(0.5)
+    puts "Are you ready?!\n\n"
+    sleep(1.5)
+    puts "Let's play!\n\n"
+    sleep(1)
+    print "."
+    sleep(0.3)
+    print "."
+    sleep(0.3)
+    print "."
+    sleep(0.5)
     self.start_game
   end
 
@@ -125,7 +125,7 @@ class Console
     end
     puts
     puts "Great! You chose #{game_types[@choice-1]}"
-    puts "[ANY KEY] to continue."
+    puts "[Enter] to continue."
     gets.chomp
   end
 
@@ -153,7 +153,7 @@ class Console
     end
     puts
     puts "Great! You chose #{@difficulty_level}"
-    puts "[ANY KEY] to continue."
+    puts "[Enter] to continue."
     gets.chomp
     system "clear"
   end
@@ -213,7 +213,7 @@ class Console
     end
     puts
     puts "Great choice! #{@player1['name']}'s symbol is '#{@player1['symbol']}' and #{@player2['name']}'s is '#{@player2['symbol']}'"
-    puts "[ANY KEY] to continue."
+    puts "[Enter] to continue."
     gets.chomp
   end
 
@@ -237,18 +237,11 @@ class Console
       end
     end
     puts
-    puts "[ANY KEY] to continue."
+    puts "[Enter] to continue."
     gets.chomp
   end
 
   def start_game
-    # start by printing the board
-    # display_banner
-    # puts "#{@current_player['name']}, make your first move!"
-    # if (@game_type == 'hvc' && @current_player['player_type'] == "Computer") || @game_type == 'cvc'
-    #   puts "(#{@current_player['name']}: Hmmm let me think...)"
-    # end
-    # loop through until the game was won or tied
     if @game_type == 'hvh'
       human_vs_human
     elsif @game_type == 'hvc'
@@ -341,7 +334,7 @@ class Console
   end
 
   def space_is_not_taken
-    @board[@space] != "X" || @board[@space] != "O"
+    @board[@space] != "X" && @board[@space] != "O"
   end
 
   def human_vs_computer
