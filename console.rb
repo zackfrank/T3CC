@@ -311,6 +311,11 @@ class Console
             player: @current_player,
             space: @space
           }
+          
+          if @game_type != 'hvh'
+            computer_thinking
+          end
+
           @game = Unirest.patch("http://localhost:3000/v1/games/#{@game['id']}", parameters: params).body
           @game_is_over = @game['game_is_over']
         else
@@ -371,18 +376,6 @@ class Console
     end
   end
 
-  # def is_hvc_game_over?(last_move)
-  #   if @game['tie']
-  #     @hvc_game_over = true
-  #   else
-  #     if last_move == "Human" && @game_is_over && @game['winner'] == @player1
-  #       @hvc_game_over = true
-  #     elsif last_move == "Computer" && @game_is_over && @game['winner'] == @player2
-  #       @hvc_game_over = true
-  #     end
-  #   end
-  # end
-
   def hvc_computer_makes_first_move
     params = {
         player: @player2,
@@ -395,6 +388,36 @@ class Console
     print_board
 
     hvc_make_computer_move
+  end
+
+  def computer_thinking
+    game = @game.dup
+    
+    Thread.new {
+      def sleep_and_print_unless_computer_is_ready(game, time, text)
+        sleep(time)
+        unless game != @game
+          print text
+        end
+      end
+
+      if @game_type == 'hvc'
+        name = "Computer"
+      else
+        name = @current_player['name']
+      end
+
+      until game != @game
+        display_banner
+        pre_board_display
+        print_board
+        sleep_and_print_unless_computer_is_ready(game, 0, "#{name} is thinking")
+        sleep_and_print_unless_computer_is_ready(game, 1, ".")
+        sleep_and_print_unless_computer_is_ready(game, 0.3, ".")
+        sleep_and_print_unless_computer_is_ready(game, 0.3, ".")
+        sleep_and_print_unless_computer_is_ready(game, 0.3, "")
+      end
+    }
   end
 
   def hvc_make_computer_move
