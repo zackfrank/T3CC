@@ -54,7 +54,7 @@ class Console
   end
 
   def set_up
-    animation
+    # animation
     player_setup
     if @player2['player_type'] == "Computer"
       difficulty_level
@@ -77,16 +77,16 @@ class Console
     @player2 = @game['player2']
     @first_player == 'player1' ? @current_player = @player1 : @current_player = @player2
     @game_is_over = false
-    puts "Are you ready?!\n\n"
-    sleep(1.5)
-    puts "Let's play!\n\n"
-    sleep(1)
-    print "."
-    sleep(0.3)
-    print "."
-    sleep(0.3)
-    print "."
-    sleep(0.5)
+    # puts "Are you ready?!\n\n"
+    # sleep(1.5)
+    # puts "Let's play!\n\n"
+    # sleep(1)
+    # print "."
+    # sleep(0.3)
+    # print "."
+    # sleep(0.3)
+    # print "."
+    # sleep(0.5)
     self.start_game
   end
 
@@ -249,7 +249,6 @@ class Console
     elsif @game_type == 'cvc'
       computer_vs_computer
     end
-    end_of_game    
   end
 
   def print_board
@@ -272,6 +271,7 @@ class Console
       print_board
       get_human_spot
     end
+    end_of_game
   end
 
   def pre_board_display
@@ -347,14 +347,14 @@ class Console
       print_board
       hvc_make_computer_move
       if @game['winner'] == @player2 || @game['tie']
-        break
         update_board
         end_of_game
+        break
       end
       get_human_spot
       if @game['winner'] == @player1 || @game['tie']
-        break
         end_of_game
+        break
       end
     end
   end
