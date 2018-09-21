@@ -70,18 +70,6 @@ class Game < ApplicationRecord
     return player2
   end
 
-  def switch_player(current_player)
-    current_player == player1 ? @next_player = player2 : @next_player = player1
-  end
-
-  def next_player
-    @next_player
-  end
-
-  def opposite_player(player)
-    player == player1 ? player2 : player1
-  end
-
   def make_human_move(player, space)
     self.board[space] = player.symbol
     self.board.save
@@ -97,36 +85,18 @@ class Game < ApplicationRecord
     end
   end
 
-  def computer_move
-    @computer_move
+  # used to send next player to frontend
+  def switch_player(current_player)
+    current_player == player1 ? @next_player = player2 : @next_player = player1
   end
 
-  def winning_possibilities(b) #possible rows, columns, and diagonals for a win
-    [
-      [b[0], b[1], b[2]],
-      [b[3], b[4], b[5]],
-      [b[6], b[7], b[8]],
-      [b[0], b[3], b[6]],
-      [b[1], b[4], b[7]],
-      [b[2], b[5], b[8]],
-      [b[0], b[4], b[8]],
-      [b[2], b[4], b[6]]
-    ]
-  end
-
-  def someone_wins(board) #returns boolean if there is a winner
-    winning_possibilities(board).any? {|possible_win| possible_win.uniq.length == 1 }
-  end
-
-  def tie(board) #returns boolean if there is a tie
-    board.spaces_array.all? { |s| s == "X" || s == "O" } && !winner(board)
-  end
-
-  def game_is_over(board) #returns boolean if either winner or tie
+  # returns true if game ends with winner or tie
+  def game_is_over(board)
     someone_wins(board) || tie(board)
   end
 
-  def winner(board) #returns winner or nil
+  # returns winning player hash/object or false
+  def winner(board)
     p1symbol = self.player1.symbol
     p2symbol = self.player2.symbol
     if winning_possibilities(board).detect {|possible_win| possible_win.all? p1symbol }
@@ -156,5 +126,41 @@ class Game < ApplicationRecord
       computer_move: computer_move
     }
   end
+
+  private
+
+    # sent to frontend
+    def next_player
+      @next_player
+    end
+
+    # sent to frontend
+    def computer_move
+      @computer_move
+    end
+
+    # used to figure out if/who wins or if tie game
+    def winning_possibilities(b) # possible rows, columns, and diagonals for a win
+      [
+        [b[0], b[1], b[2]],
+        [b[3], b[4], b[5]],
+        [b[6], b[7], b[8]],
+        [b[0], b[3], b[6]],
+        [b[1], b[4], b[7]],
+        [b[2], b[5], b[8]],
+        [b[0], b[4], b[8]],
+        [b[2], b[4], b[6]]
+      ]
+    end
+
+    # used in game_is_over; returns true if there's a winner
+    def someone_wins(board)
+      winning_possibilities(board).any? {|possible_win| possible_win.uniq.length == 1 }
+    end
+
+    # returns boolean if there is a tie
+    def tie(board)
+      board.spaces_array.all? { |s| s == "X" || s == "O" } && !winner(board)
+    end
 
 end

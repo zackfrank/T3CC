@@ -57,7 +57,7 @@ class Console
     # animation
     player_setup
     if @player2['player_type'] == "Computer"
-      difficulty_level
+      set_difficulty_level
     end
     name_players
     choose_symbol
@@ -102,57 +102,56 @@ class Console
     puts "#{game_types[1]}"
     puts "#{game_types[2]}"
     print "Entry: "
-    @choice = gets.chomp.to_i
-    @player1 = nil
+    entry = gets.chomp.to_i
     until @player1 do
-      if @choice == 1
+      if entry == 1
         @player1 = Unirest.post("http://localhost:3000/v1/humen").body
         @player2 = Unirest.post("http://localhost:3000/v1/humen").body
         @game_type = 'hvh'
-      elsif @choice == 2
+      elsif entry == 2
         @player1 = Unirest.post("http://localhost:3000/v1/humen").body
         @player2 = Unirest.post("http://localhost:3000/v1/computers").body
         @game_type = 'hvc'
-      elsif @choice == 3
+      elsif entry == 3
         @player1 = Unirest.post("http://localhost:3000/v1/computers").body
         @player2 = Unirest.post("http://localhost:3000/v1/computers").body
         @game_type = 'cvc'
       else
         puts
-        puts "#{@choice} is not a valid entry. Please choose [1] [2] or [3]:"
-        @choice = gets.chomp.to_i
+        puts "You entered an invalid entry. Please choose [1] [2] or [3]:"
+        entry = gets.chomp.to_i
       end
     end
     puts
-    puts "Great! You chose #{game_types[@choice-1]}"
+    puts "Great! You chose #{game_types[entry-1]}."
     puts "[Enter] to continue."
     gets.chomp
   end
 
-  def difficulty_level
+  def set_difficulty_level
     display_banner
     puts "Please choose a difficulty level:"
     puts "[1] Easy"
     puts "[2] Medium"
     puts "[3] Hard"
     print "Entry: "
-    level = gets.chomp.to_i
+    entry = gets.chomp.to_i
     @difficulty_level = nil
     until @difficulty_level do
-      if level == 1
+      if entry == 1
         @difficulty_level = "Easy"
-      elsif level == 2
+      elsif entry == 2
         @difficulty_level = "Medium"
-      elsif level == 3
+      elsif entry == 3
         @difficulty_level = "Hard"
       else
         puts
-        puts "#{@game_type} is not a valid entry. Please choose [1] [2] or [3]:"
-        level = gets.chomp.to_i
+        puts "You entered an invalid entry. Please choose [1] [2] or [3]:"
+        entry = gets.chomp.to_i
       end
     end
     puts
-    puts "Great! You chose #{@difficulty_level}"
+    puts "Great! You chose '#{@difficulty_level}'."
     puts "[Enter] to continue."
     gets.chomp
     system "clear"
@@ -197,22 +196,22 @@ class Console
       puts "[1] for 'X'"
       puts "[2] for 'O'"
       print "Entry: "
-      choice = gets.chomp.to_i
-      if choice == 1
+      entry = gets.chomp.to_i
+      if entry == 1
         @player1['symbol'] = ("X")
         @player2['symbol'] = ("O")
         @who_is_x = 'player1'
-      elsif choice == 2
+      elsif entry == 2
         @player1['symbol'] = ("O")
         @player2['symbol'] = ("X")
         @who_is_x = 'player2'
       else
         puts
-        puts "#{choice} is not a valid option. Please try again:"
+        puts "You entered an invalid entry. Please try again:"
       end
     end
     puts
-    puts "Great choice! #{@player1['name']}'s symbol is '#{@player1['symbol']}' and #{@player2['name']}'s is '#{@player2['symbol']}'"
+    puts "Great choice! #{@player1['name']}'s symbol is '#{@player1['symbol']}' and #{@player2['name']}'s is '#{@player2['symbol']}'."
     puts "[Enter] to continue."
     gets.chomp
   end
@@ -223,17 +222,17 @@ class Console
     puts "[1] #{@player1['name']}"
     puts "[2] #{@player2['name']}"
     print "Entry: "
-    choice = gets.chomp.to_i
+    entry = gets.chomp.to_i
     until @first_player
-      if choice == 1
+      if entry == 1
         @first_player = 'player1'
         puts "Great! #{@player1['name']} will go first."
-      elsif choice == 2
+      elsif entry == 2
         @first_player = 'player2'
         puts "Great! #{@player2['name']} will go first."
       else
-        print "#{choice} is not a valid choice, please choose [1] or [2]: "
-        choice = gets.chomp.to_i
+        print "You entered an invalid entry, please choose [1] or [2]: "
+        entry = gets.chomp.to_i
       end
     end
     puts
@@ -287,6 +286,11 @@ class Console
     elsif @game_type == 'hvc'
       puts "#{@player1['name']} chose: #{@space} - the #{spots[@space]} space."
       puts " " * 8 + "Computer's turn!"
+    elsif @game_type == 'cvc'
+      puts "#{@previous_player['name']}: I took #{@space}, the #{spots[@space]} space."
+      unless @game['game_is_over']
+        puts "Your turn, #{@current_player['name']}."
+      end
     end
   end
 
@@ -312,7 +316,8 @@ class Console
             space: @space
           }
           
-          if @game_type != 'hvh'
+          if @game_type == 'hvc'
+            @board[@space.to_s] = @current_player['symbol']
             computer_thinking
           end
 
@@ -323,13 +328,9 @@ class Console
           @space = nil
         end
       else
-        print "That is not a valid spot, please try again: "
+        puts "That is not a valid spot, please try again."
         @space = nil
       end
-    end
-
-    if @game_type == "hvc"
-      @board[@space.to_s] = @player1['symbol']
     end
 
   end
@@ -343,7 +344,6 @@ class Console
   end
 
   def human_vs_computer
-    @hvc_game_over = false
     hvc_first_move
 
     while true
@@ -394,6 +394,7 @@ class Console
     game = @game.dup
     
     Thread.new {
+      
       def sleep_and_print_unless_computer_is_ready(game, time, text)
         sleep(time)
         unless game != @game
@@ -403,7 +404,7 @@ class Console
 
       if @game_type == 'hvc'
         name = "Computer"
-      else
+      elsif @game_type == 'cvc'
         name = @current_player['name']
       end
 
@@ -441,9 +442,58 @@ class Console
   end
 
   def computer_vs_computer
-    until @game['game_is_over']
+    cvc_first_move
+    @cvc_round = 1
 
+    until @game['game_is_over']
+      @cvc_round += 1
+      display_banner
+      pre_board_display
+      print_board
+      print_cvc_response
+      cvc_make_computer_move
     end
+    end_of_game
+  end
+
+  def cvc_first_move
+    display_banner
+    puts "#{@current_player['name']}, make your first move!"
+    print_board
+    puts "#{@current_player['name']}: Here we go!\n\n"
+    
+    @game = Unirest.patch("http://localhost:3000/v1/games/#{@game['id']}", parameters: {player: @current_player}).body
+    update_board
+    
+    puts "[Enter] to view computer move"
+    gets.chomp
+    @space = @game['computer_move']
+    @previous_player = @current_player.dup
+    update_current_player
+  end
+
+  def print_cvc_response
+    if @game['game_is_over']
+      puts "#{@current_player['name']}: Looks like this game's about to end..."
+    else
+      puts "#{@current_player['name']}: #{@game['computer_response']}"
+    end
+    puts "[Enter] to view computer move"
+    gets.chomp
+  end
+
+  def cvc_make_computer_move
+    if @difficulty_level == 'Hard' && @cvc_round == 3
+      computer_thinking
+    end
+
+    @game = Unirest.patch("http://localhost:3000/v1/games/#{@game['id']}", parameters: {player: @current_player}).body
+    @game_is_over = @game['game_is_over']
+    update_board
+
+    @space = @game['computer_move']
+    @previous_player = @current_player.dup
+    update_current_player
   end
 
   def spots
@@ -477,15 +527,17 @@ class Console
 
   def end_of_game
     end_game_display
-    if @game_type != 'hvh'
-      puts "*** Computer: #{@game['computer_response']} ***\n\n"
-    else
+    if @game_type == 'hvh'
       puts "*** #{winning_message} ***\n\n"
+    elsif @game_type == 'hvc'
+      puts "*** Computer: #{@game['computer_response']} ***\n\n"
+    elsif @game_type == 'cvc'
+      puts "*** #{@previous_player['name']}: #{@game['computer_response']} ***\n\n"
     end
     puts "What would you like to do?"
     puts "[1] For a rematch"
     puts "[2] To start a new game"
-    puts "[3] To quit"
+    puts "[Enter] To quit"
     choice = gets.chomp.to_i
     if choice == 1
       re_match

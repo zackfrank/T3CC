@@ -25,11 +25,7 @@ class Board < ApplicationRecord
   def corners()
     [self[0], self[2], self[6], self[8]]
   end
-
-  def edges()
-    [self[1], self[3], self[5], self[7]]
-  end
-
+  
   def center_taken()
     self[4] == "X" || self[4] == "O"
   end
@@ -49,5 +45,11 @@ class Board < ApplicationRecord
   def first_move()
     spaces_array.index("X") || spaces_array.index("O")
   end
+
+  private  
+
+    def edges()
+      [self[1], self[3], self[5], self[7]]
+    end  
 
 end
