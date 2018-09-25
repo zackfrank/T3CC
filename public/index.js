@@ -100,6 +100,9 @@ var HomePage = {
         }
       }
     },
+    setPlayer1Symbol: function(symbol) {
+      this.player1.symbol = symbol;
+    },
     startGame: function() {
       if (this.player1.symbol === 'X') {
         var whoIsX = 'player1';

@@ -75,12 +75,10 @@
       <div class="modal-content">
         <h2>Please Choose Symbol for {{player1.name}}</h2>
         <h3>Choose from the options below...</h3>
-        <label for="symbol">{{player1.name}}'s Symbol:</label>
-        <select name="symbol" v-model="player1.symbol">
-          <option value="">Choose one...</option>
-          <option value="X">X</option>
-          <option value="O">O</option>
-        </select>
+        <div class="symbols">
+          <img src="img/X.png" @click="setPlayer1Symbol('X')" class="symbolButton">
+          <img src="img/O.png" @click="setPlayer1Symbol('O')" class="symbolButton">
+        </div>
       </div>
     </div>
     <!-- End of Modal -->
