@@ -119,19 +119,32 @@ var HomePage = {
         function(response) {
           this.start = true; // clear modal
           this.game = response.data;
+
+          // update players with game_id, symbols, names
           this.player1 = response.data.player1;
           this.player2 = response.data.player2;
+
           this.message = this.firstPlayerName + ", make your first move!";
+
+          /* If player1 starts, set current player to player1 and start hvh/hvc, or cvc gameplay
+          Once human move is sumbitted, submitMove() will sort out whether to proceed to next
+          human move or to process a computer move based on game type */
           if (this.firstPlayerName === this.player1.name) {
             this.currentPlayer = response.data.player1;
             if (this.gameType === 'cvc') {
               this.cvcGameplay();
             }
+          // If player2 starts...
           } else {
+            // Set current player to player2 and start hvh gameplay or the following...
             this.currentPlayer = response.data.player2;
             if (this.gameType === 'hvc') {
+              
+              // Computer starts hvc game - move is made on back end, then switch to human user
               this.submitMove(null);
               this.currentPlayer = this.player1;
+
+              // If game type is cvc, jump right into cvc gameplay with player2 starting
             } else if (this.gameType === 'cvc') {
               this.cvcGameplay();
             }
@@ -144,7 +157,7 @@ var HomePage = {
         this.topLeft = this.currentPlayer.symbol;
         this.submitMove(0);
       } else {
-        this.spotTaken();
+        this.spotErrorMessage();
       }
     },
     chooseTopCenter: function() {
@@ -152,7 +165,7 @@ var HomePage = {
         this.topCenter = this.currentPlayer.symbol;
         this.submitMove(1);
       } else {
-        this.spotTaken();
+        this.spotErrorMessage();
       }
     },
     chooseTopRight: function() {
@@ -160,7 +173,7 @@ var HomePage = {
         this.topRight = this.currentPlayer.symbol;
         this.submitMove(2);
       } else {
-        this.spotTaken();
+        this.spotErrorMessage();
       }
     },
     chooseMiddleLeft: function() {
@@ -168,7 +181,7 @@ var HomePage = {
         this.middleLeft = this.currentPlayer.symbol;
         this.submitMove(3);
       } else {
-        this.spotTaken();
+        this.spotErrorMessage();
       }
     },
     chooseCenter: function() {
@@ -176,7 +189,7 @@ var HomePage = {
         this.center = this.currentPlayer.symbol;
         this.submitMove(4);
       } else {
-        this.spotTaken();
+        this.spotErrorMessage();
       }
     },
     chooseMiddleRight: function() {
@@ -184,7 +197,7 @@ var HomePage = {
         this.middleRight = this.currentPlayer.symbol;
         this.submitMove(5);
       } else {
-        this.spotTaken();
+        this.spotErrorMessage();
       }
     },
     chooseBottomLeft: function() {
@@ -192,7 +205,7 @@ var HomePage = {
         this.bottomLeft = this.currentPlayer.symbol;
         this.submitMove(6);
       } else {
-        this.spotTaken();
+        this.spotErrorMessage();
       }
     },
     chooseBottomCenter: function() {
@@ -200,7 +213,7 @@ var HomePage = {
         this.bottomCenter = this.currentPlayer.symbol;
         this.submitMove(7);
       } else {
-        this.spotTaken();
+        this.spotErrorMessage();
       }
     },
     chooseBottomRight: function() {
@@ -208,10 +221,10 @@ var HomePage = {
         this.bottomRight = this.currentPlayer.symbol;
         this.submitMove(8);
       } else {
-        this.spotTaken();
+        this.spotErrorMessage();
       }
     },
-    spotTaken: function() {
+    spotErrorMessage: function() {
       if (this.moveAllowed) {
         this.message = "That spot has already been taken, please choose a valid spot.";
       } else {
@@ -219,7 +232,13 @@ var HomePage = {
       }
     },
     submitMove: function(space) {
-      this.moveAllowed = false;
+      /* Submits human moves during hvh and hvc gameplay via patch request to /games/[:id] endpoint
+
+      hvh gameplay: processes move (see processHumanVsHumanMove()), and prints a message (see printMessage()) 
+      hvc gameplay: prints 'Computer's Turn', processes moves (see processHUmanVsComputerMove())*/
+
+
+      this.moveAllowed = false; // to bar a player from taking a second turn before the next player goes
 
       // ----------- To account for minimax processing time ------------
       if (this.difficultyLevel === "Hard") {
@@ -256,15 +275,27 @@ var HomePage = {
     },
     processHumanVsComputerMove: function(game) {
       this.computerResponse = "Computer: " + game.computer_response;
+
+      // Computer move is delayed to add element of realism to gameplay (as if computer is thinking)
       setTimeout(function() {
         this.makeComputerMove(this.player2.symbol, game.computer_move);
-        this.moveAllowed = true;
         this.currentPlayer = game.next_player;
+        this.moveAllowed = true;
       }.bind(this), 1500);
+
       this.checkForAndProcessGameOver();
       this.printMessage();
     },
     printMessage: function() {
+      
+      /* This function prints whose turn it is after a turn is taken during hvh 
+      or hvc gameplay unless game is over, then it prints 'Game Over!'
+
+      In human vs. human games, messages can be delivered immediately,
+      however when playing against a computer, messages are delayed 1.5 sec
+      to line up with delay in computer move - computer moves are delayed to
+      make gameplay seem more realistic */
+
       if (this.game.winner || this.game.tie) {
         if (this.computerEndsHvcGame()) {
           setTimeout(function() {
@@ -284,6 +315,10 @@ var HomePage = {
       }
     },
     checkForAndProcessGameOver: function() {
+      /* this.winner and this.tie will trigger frontend message and modal if truthy- 
+      so they are delayed if computer makes final move, otherwise user would 
+      be notified game is over before computer move was made visible to human user */
+
       if (this.computerEndsHvcGame()) {
         setTimeout(function() {
           this.winner = this.game.winner;
@@ -295,14 +330,24 @@ var HomePage = {
       }
     },
     computerEndsHvcGame: function() {
+      /* Conditions to know computer ended HVC game:
+      
+      Game type is 'hvc'
+      -- and --
+      
+      Either winner is Computer which is player2 
+      -- or --
+      Game is tied and Computer made the first move 
+      (which would mean Computer also made last move) */
+
       if (this.gameType === 'hvc' && (this.game.winner.id === this.game.player2.id || (this.game.tie && this.firstPlayerName === this.player2.name))) {
         return true;
       }
     },
     cvcGameplay: function() {
-      this.moveAllowed = false;
+      this.moveAllowed = false; // bars user from clicking on a spot and 'making a move'
 
-      let params = {
+      var params = {
         player: this.currentPlayer,
       };
 
@@ -349,6 +394,7 @@ var HomePage = {
       }
     },
     rematch: function() {
+      // Reset the board for a rematch with same settings as the previous game
       this.topLeft = "";
       this.topCenter = "";
       this.topRight = "";
@@ -370,6 +416,7 @@ var HomePage = {
       );
     },
     startOver: function() {
+      // start a completely new game by reloading the site/app
       location.reload();
     }
   },
