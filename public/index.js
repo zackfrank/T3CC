@@ -38,6 +38,8 @@ var HomePage = {
     };
   },
   created: function() {
+    /* Create a board on the backend, load corresponding numbers into each board space (ie board[1] === 1)
+    Load board into frontend */
     axios.post("v1/boards").then(
       function(response) {
         this.board = response.data;
@@ -46,6 +48,19 @@ var HomePage = {
   },
   methods: {
     playerSetup: function() {
+      /* Create players on backend based on game type:
+
+      hvh creates two human players
+      hvc creates a human and a computer player
+      cvc creates two computer players 
+      
+      Load players to frontend as player1 and player2:
+      player1 will always be the human player in hvh and hvc --- only computer in cvc
+      player2 will always be computer player in hvc and cvc --- only human in hvh
+
+      If cvc, adds names "Computer 1" and "Computer 2" to player1 and player2 respectively
+      and sets namesSubmitted variable to true so name submission modal does not pop up
+      */
       if (this.gameType === 'hvh') {
         axios.post("v1/humen").then(
           function(response) {
@@ -85,6 +100,10 @@ var HomePage = {
       }
     },
     submitNames: function() {
+      /* For games involving human players (hvh & hvc):
+      If names are properly submitted, 
+      sets namesSubmitted variable to true to clear names modal from screen.
+      For hvc game, player2 is named "Computer" on frontend */
       if (this.gameType === 'hvh') {
         if (this.player1.name && this.player2.name) {
           this.namesSubmitted = true;
@@ -101,19 +120,23 @@ var HomePage = {
       }
     },
     setPlayer1Symbol: function(symbol) {
+      // Sets player1 symbol from Symbol modal on frontend
       this.player1.symbol = symbol;
     },
     startGame: function() {
-      if (this.player1.symbol === 'X') {
-        var whoIsX = 'player1';
-      } else {
-        whoIsX = 'player2';
-      }
+      /* Sends all game and player data to backend to set up game and start game
+      If computer makes first move, 
+       */
+      // if (this.player1.symbol === 'X') {
+      //   var whoIsX = 'player1';
+      // } else {
+      //   whoIsX = 'player2';
+      // }
       var params = {
         game_type: this.gameType,
         level: this.difficultyLevel,
         names: [this.player1.name, this.player2.name],
-        who_is_x: whoIsX,
+        // who_is_x: whoIsX,
         board_id: this.board.id,
         player1: this.player1,
         player2: this.player2
@@ -123,10 +146,11 @@ var HomePage = {
           this.start = true; // clear modal
           this.game = response.data;
 
-          // update players with game_id, symbols, names
+          // Update players with game_id, symbols, names
           this.player1 = response.data.player1;
           this.player2 = response.data.player2;
 
+          // Send message to first player to make the first move
           this.message = this.firstPlayerName + ", make your first move!";
 
           /* If player1 starts, set current player to player1 and start hvh/hvc, or cvc gameplay

@@ -54,7 +54,7 @@ class Console
   end
 
   def set_up
-    # animation
+    animation
     player_setup
     if @player2['player_type'] == "Computer"
       set_difficulty_level
@@ -66,7 +66,6 @@ class Console
       game_type: @game_type,
       level: @difficulty_level,
       names: [@player1['name'], @player2['name']],
-      who_is_x: @who_is_x,
       board_id: @board['id'],
       player1: @player1,
       player2: @player2
@@ -77,16 +76,16 @@ class Console
     @player2 = @game['player2']
     @first_player == 'player1' ? @current_player = @player1 : @current_player = @player2
     @game_is_over = false
-    # puts "Are you ready?!\n\n"
-    # sleep(1.5)
-    # puts "Let's play!\n\n"
-    # sleep(1)
-    # print "."
-    # sleep(0.3)
-    # print "."
-    # sleep(0.3)
-    # print "."
-    # sleep(0.5)
+    puts "Are you ready?!\n\n"
+    sleep(1.5)
+    puts "Let's play!\n\n"
+    sleep(1)
+    print "."
+    sleep(0.3)
+    print "."
+    sleep(0.3)
+    print "."
+    sleep(0.5)
     self.start_game
   end
 
@@ -200,11 +199,9 @@ class Console
       if entry == 1
         @player1['symbol'] = ("X")
         @player2['symbol'] = ("O")
-        @who_is_x = 'player1'
       elsif entry == 2
         @player1['symbol'] = ("O")
         @player2['symbol'] = ("X")
-        @who_is_x = 'player2'
       else
         puts
         puts "You entered an invalid entry. Please try again:"
@@ -584,7 +581,6 @@ class Console
       game_type: @game_type,
       level: @difficulty_level,
       names: [@player1['name'], @player2['name']],
-      who_is_x: @who_is_x,
       board_id: @board['id'],
       player1: @player1,
       player2: @player2

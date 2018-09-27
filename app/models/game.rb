@@ -7,15 +7,15 @@ class Game < ApplicationRecord
     self.game_type = params[:game_type]
     self.difficulty_level = params[:level]
     self.board_id = params[:board_id]
-    self.player_setup(params[:player1], params[:player2], params[:names], params[:who_is_x])
+    self.player_setup(params[:player1], params[:player2], params[:names])
   end
 
-  def player_setup(player1, player2, names, who_is_x)
+  def player_setup(player1, player2, names)
     player1[:player_type] == "Human" ? player1 = Human.find(player1[:id]) : player1 = Computer.find(player1[:id])
     player2[:player_type] == "Human" ? player2 = Human.find(player2[:id]) : player2 = Computer.find(player2[:id])
     player1.game_id = self.id
     player2.game_id = self.id
-    if who_is_x == 'player1'
+    if player1[:symbol] == 'X'
       player1.symbol = "X"
       player2.symbol = "O"
     else
