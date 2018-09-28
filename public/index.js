@@ -125,18 +125,17 @@ var HomePage = {
     },
     startGame: function() {
       /* Sends all game and player data to backend to set up game and start game
-      If computer makes first move, 
+      Data is then updated on front end
+
+      If computer makes first move, move is retrieved from backend
+      If human makes first move, appropriate player is encouraged to choose a spot 
+
+      If game type is cvc, cvcGameplay() is called to run cvc game
        */
-      // if (this.player1.symbol === 'X') {
-      //   var whoIsX = 'player1';
-      // } else {
-      //   whoIsX = 'player2';
-      // }
       var params = {
         game_type: this.gameType,
         level: this.difficultyLevel,
         names: [this.player1.name, this.player2.name],
-        // who_is_x: whoIsX,
         board_id: this.board.id,
         player1: this.player1,
         player2: this.player2
@@ -153,21 +152,26 @@ var HomePage = {
           // Send message to first player to make the first move
           this.message = this.firstPlayerName + ", make your first move!";
 
-          /* If player1 starts, set current player to player1 and start hvh/hvc, or cvc gameplay
-          Once human move is sumbitted, submitMove() will sort out whether to proceed to next
-          human move or to process a computer move based on game type */
+          // If player1 starts:
           if (this.firstPlayerName === this.player1.name) {
+            
+            // Set current player to player 1, human player1 is free to make the first move
             this.currentPlayer = response.data.player1;
+            
+            // If game type is cvc, jump right into cvc gameplay with player1 starting
             if (this.gameType === 'cvc') {
               this.cvcGameplay();
             }
-          // If player2 starts...
+          // If player2 starts:
           } else {
-            // Set current player to player2 and start hvh gameplay or the following...
+            // Set current player to player2
+            // If game type is hvh, human player2 is free to make the first move
             this.currentPlayer = response.data.player2;
             if (this.gameType === 'hvc') {
               
-              // Computer starts hvc game - move is made on back end, then switch to human user
+              /* If game type is hvc:
+              Computer starts game - move is made on backend then registered on frontend
+              Then switch current player to human user, player1 */
               this.submitMove(null);
               this.currentPlayer = this.player1;
 
@@ -179,6 +183,16 @@ var HomePage = {
         }.bind(this)
       );
     },
+    /* ---------------------------------------------------------------------------------------------
+    The following nine functions register human moves for each of the nine possible 
+    spots on the tic tac toe board.
+
+    If the spot is available and a move is allowed (ie. it is a human's turn), the choice will 
+    be submitted to the backend to process via submitMove()
+
+    If the spot is taken or it is the computer's turn, spotErrorMessage() is called to deliver
+    the appropriate error message to the user
+    --------------------------------------------------------------------------------------------- */
     chooseTopLeft: function() {
       if (this.topLeft === "" && this.moveAllowed) {
         this.topLeft = this.currentPlayer.symbol;
@@ -259,13 +273,17 @@ var HomePage = {
       }
     },
     submitMove: function(space) {
-      /* Submits human moves during hvh and hvc gameplay via patch request to /games/[:id] endpoint
+      /* 
+
+      Submits human moves during hvh and hvc gameplay to backend for processing
 
       hvh gameplay: processes move (see processHumanVsHumanMove()), and prints a message (see printMessage()) 
-      hvc gameplay: prints 'Computer's Turn', processes moves (see processHUmanVsComputerMove())*/
+      hvc gameplay: prints "Computer's Turn", processes moves (see processHumanVsComputerMove()) 
+
+      */
 
 
-      this.moveAllowed = false; // to bar a player from taking a second turn before the next player goes
+      this.moveAllowed = false; // this bar a player from taking a second turn before the next player goes
 
       // ----------- To account for minimax processing time ------------
       if (this.difficultyLevel === "Hard") {
@@ -281,51 +299,58 @@ var HomePage = {
 
       axios.patch("v1/games/" + this.game.id, params).then(
         function(response) {
-          this.board = response.data.board;
-          this.game = response.data;
+          var game = response.data;
+          this.board = game.board;
+          this.game = game;
 
           if (this.gameType === 'hvh') {
-            this.processHumanVsHumanMove(response.data);
+            this.processHumanVsHumanMove(game);
             this.printMessage();
           } else if (this.gameType === 'hvc') {
             this.message = this.player2.name + "'s turn!";
-            this.processHumanVsComputerMove(response.data);
+            this.processHumanVsComputerMove(game);
           } 
 
         }.bind(this)
       );
     },
     processHumanVsHumanMove: function(game) {
-      this.currentPlayer = game.next_player;
-      this.checkForAndProcessGameOver();
-      this.moveAllowed = true;
+      this.currentPlayer = game.next_player; // updates current player
+      this.checkForAndProcessGameOver(); // checks for a win or tie after every move
+      this.moveAllowed = true; // allows move to be made since current player has been updated
     },
     processHumanVsComputerMove: function(game) {
+      // Human-like response from computer player is delivered to frontend
       this.computerResponse = "Computer: " + game.computer_response;
 
       // Computer move is delayed to add element of realism to gameplay (as if computer is thinking)
       setTimeout(function() {
-        this.makeComputerMove(this.player2.symbol, game.computer_move);
-        this.currentPlayer = game.next_player;
-        this.moveAllowed = true;
+        this.displayComputerMove(this.player2.symbol, game.computer_move); // makes appropriate symbol visible on frontend
+        this.currentPlayer = game.next_player; // update current player
+        this.moveAllowed = true; // allow human move now that current player has been updated
       }.bind(this), 1500);
 
-      this.checkForAndProcessGameOver();
-      this.printMessage();
+      this.checkForAndProcessGameOver(); // Check for win or tie after every move
+      this.printMessage(); // Prints appropriate message after every move
     },
     printMessage: function() {
-      
-      /* This function prints whose turn it is after a turn is taken during hvh 
+      /* 
+
+      This function prints whose turn it is after a turn is taken during hvh 
       or hvc gameplay unless game is over, then it prints 'Game Over!'
 
-      In human vs. human games, messages can be delivered immediately,
+      In human vs. human games, messages are delivered immediately,
       however when playing against a computer, messages are delayed 1.5 sec
-      to line up with delay in computer move - computer moves are delayed to
-      make gameplay seem more realistic */
+      to line up with delay in computer move which are delayed to
+      make gameplay seem more realistic 
+
+      */
 
       if (this.game.winner || this.game.tie) {
         if (this.computerEndsHvcGame()) {
           setTimeout(function() {
+            /* Game Over msg is delayed slightly more so user can see 
+            computer make the move just before modal pops up */
             this.message = "Game Over!";
           }.bind(this), 1600);
         } else {
@@ -342,9 +367,15 @@ var HomePage = {
       }
     },
     checkForAndProcessGameOver: function() {
-      /* this.winner and this.tie will trigger frontend message and modal if truthy- 
-      so they are delayed if computer makes final move, otherwise user would 
-      be notified game is over before computer move was made visible to human user */
+      /* 
+
+      Updates 'winner' and 'tie' which are tied to game over modal.
+      They will trigger modal if truthy.
+
+      The update is delayed if computer makes final move, otherwise user would 
+      be notified game is over before computer move was made visible to human user.
+
+      */
 
       if (this.computerEndsHvcGame()) {
         setTimeout(function() {
@@ -357,49 +388,66 @@ var HomePage = {
       }
     },
     computerEndsHvcGame: function() {
-      /* Conditions to know computer ended HVC game:
+      /* 
+      
+      This returns a boolean for whether player2 ('Computer') ends hvc game.
+
+      Conditions to know computer ended HVC game:
       
       Game type is 'hvc'
+
       -- and --
       
-      Either winner is Computer which is player2 
+      Either winner is 'Computer' which is player2 
       -- or --
-      Game is tied and Computer made the first move 
-      (which would mean Computer also made last move) */
+      Game is tied and 'Computer' made the first move 
+      (which would mean 'Computer' also made last move) 
+
+      */
 
       if (this.gameType === 'hvc' && (this.game.winner.id === this.game.player2.id || (this.game.tie && this.firstPlayerName === this.player2.name))) {
         return true;
       }
     },
     cvcGameplay: function() {
-      this.moveAllowed = false; // bars user from clicking on a spot and 'making a move'
+      /* 
+      Runs recursively until there is a winner or a tie.
+      Depending on difficulty level, backend processes computer move and sends to front.
+      Each move is delayed 1.5 seconds to give computers a slightly realistic/human feel
+      */
 
-      var params = {
-        player: this.currentPlayer,
-      };
+      this.moveAllowed = false; // bars human user from clicking on a spot and 'making a move'
 
-      axios.patch("v1/games/" + this.game.id, params).then(
+      axios.patch("v1/games/" + this.game.id, {player: this.currentPlayer}).then(
         function(response) {
-          this.board = response.data.board;
-          this.game = response.data;
+          var game = response.data;
+          this.board = game.board;
+          this.game = game;
           setTimeout(function() {
-            this.makeComputerMove(this.currentPlayer.symbol, response.data.computer_move);
-            this.currentPlayer = response.data.next_player;
-            this.computerResponse = this.currentPlayer.name + ": " + response.data.computer_response;
-            if (response.data.winner || response.data.tie) {
+            this.displayComputerMove(this.currentPlayer.symbol, game.computer_move); // show computer move
+            this.currentPlayer = game.next_player; // update current player
+            this.computerResponse = this.currentPlayer.name + ": " + game.computer_response; // show computer response
+
+            // Print appropriate message after each turn
+            if (game.winner || game.tie) {
               this.message = "Game Over!";
             } else {
               this.message = this.currentPlayer.name + "'s turn!";
             }
-            if (!response.data.winner && !response.data.tie) {
+
+            // If game is not over, process next turn (this is where recursion occurs)
+            if (!game.winner && !game.tie) {
               this.cvcGameplay();
             }
+
+            // Process game over after recursion ends
             this.checkForAndProcessGameOver();
           }.bind(this), 1500);
         }.bind(this)
       );
     },
-    makeComputerMove: function(symbol, spot) {
+    displayComputerMove: function(symbol, spot) {
+      // Updates frontend to show computer's symbol in spot computer has 'chosen'
       if (spot === 0) {
         this.topLeft = symbol;
       } else if (spot === 1) {
@@ -446,8 +494,7 @@ var HomePage = {
       // start a completely new game by reloading the site/app
       location.reload();
     }
-  },
-  computed: {}
+  }
 };
 
 var router = new VueRouter({

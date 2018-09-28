@@ -3,6 +3,9 @@ class Game < ApplicationRecord
   has_many :computers
   belongs_to :board, optional: true
 
+  # Used in Games#create method in the Games controller for post requests
+  # Updates database with game parameters decided by user on frontend
+  # Assumes board has already been created
   def setup(params)
     self.game_type = params[:game_type]
     self.difficulty_level = params[:level]
@@ -10,6 +13,15 @@ class Game < ApplicationRecord
     self.player_setup(params[:player1], params[:player2], params[:names])
   end
 
+
+  # player_setup() notes:
+  #
+  # This is only used in the Games#create method in the Games controller for post requests
+  # Called by setup() -- above -- which is called from Games controller
+  # Assumes players have already been created
+  # Updates game_id for each player, player symbols, player names
+  # Also saves id of each player in Games table to be used to pull players based on ids for patch requests
+  # See player1 and player2 methods below to see how player ids are used
   def player_setup(player1, player2, names)
     player1[:player_type] == "Human" ? player1 = Human.find(player1[:id]) : player1 = Computer.find(player1[:id])
     player2[:player_type] == "Human" ? player2 = Human.find(player2[:id]) : player2 = Computer.find(player2[:id])
@@ -31,8 +43,13 @@ class Game < ApplicationRecord
     self.save
   end
 
+  # update() notes:
+  #
+  # This is only used in the Games#update method in the Games controller for patch requests
+  # Human moves require params: space and player
+  # Computer moves require only player (since move/space is determined on backend)
   def update(params)
-    params[:player][:id].to_i == player1.id ? player = player1 : player = player2 #identify player
+    params[:player][:id].to_i == player1.id ? player = player1 : player = player2 # identify player
     space = params[:space]
 
     if self.game_type == 'hvh'
@@ -40,18 +57,25 @@ class Game < ApplicationRecord
       self.switch_player(player) # sends next 'current player' to front end
     elsif self.game_type == 'hvc'
       if player == player1
+        # This will be true every time except for when player2 (computer), starts the game
         self.make_human_move(player, space)
       end
       unless self.game_is_over(self.board)
+        # in hvc gameplay, unless human move ends the game:
+        # computer move is made every time human player makes a move
         self.make_computer_move(player2)
         self.switch_player(player2) # switch back to player 1
       end
     elsif self.game_type == 'cvc'
       self.make_computer_move(player)
-      self.switch_player(player)
+      self.switch_player(player) # sends next 'current player' to front end
     end
   end
 
+
+  # player1 and player2 query database to find 
+  # player1 and player2 depending on game type
+  # ------------------------------------------------------
   def player1
     if self.game_type == 'cvc'
       player1 = Computer.find(self.player1_id)
@@ -69,12 +93,16 @@ class Game < ApplicationRecord
     end
     return player2
   end
+  # ------------------------------------------------------
 
+
+  # updates board to register move human player made on frontend
   def make_human_move(player, space)
     self.board[space] = player.symbol
     self.board.save
   end
 
+  # sends message to Computer model to retrieve computer move appropriate to difficulty level
   def make_computer_move(player)
     if difficulty_level == 'Easy'
       @computer_move = player.easy_eval_board(self)
@@ -95,7 +123,7 @@ class Game < ApplicationRecord
     someone_wins(board) || tie(board)
   end
 
-  # returns winning player hash/object or false
+  # returns winning player hash/object or false if no winner
   def winner(board)
     p1symbol = self.player1.symbol
     p2symbol = self.player2.symbol
@@ -108,6 +136,7 @@ class Game < ApplicationRecord
     end
   end
 
+  # controls what is sent to frontend with each request
   def as_json
     {
       id: id,
@@ -128,32 +157,23 @@ class Game < ApplicationRecord
   end
 
   private
+    attr_reader :next_player, :computer_move
 
-    # sent to frontend
-    def next_player
-      @next_player
-    end
-
-    # sent to frontend
-    def computer_move
-      @computer_move
-    end
-
-    # used to figure out if/who wins or if tie game
+    # used to figure out if winner, who wins, or if tie game
     def winning_possibilities(b) # possible rows, columns, and diagonals for a win
       [
-        [b[0], b[1], b[2]],
-        [b[3], b[4], b[5]],
-        [b[6], b[7], b[8]],
-        [b[0], b[3], b[6]],
-        [b[1], b[4], b[7]],
-        [b[2], b[5], b[8]],
-        [b[0], b[4], b[8]],
-        [b[2], b[4], b[6]]
+        [b[0], b[1], b[2]], # top row
+        [b[3], b[4], b[5]], # middle row
+        [b[6], b[7], b[8]], # bottom row
+        [b[0], b[3], b[6]], # left column
+        [b[1], b[4], b[7]], # middle column
+        [b[2], b[5], b[8]], # right column
+        [b[0], b[4], b[8]], # top left to bottom right diagonal
+        [b[2], b[4], b[6]]  # top right to bottom left diagonal
       ]
     end
 
-    # used in game_is_over; returns true if there's a winner
+    # used in game_is_over; returns true if there is a winner
     def someone_wins(board)
       winning_possibilities(board).any? {|possible_win| possible_win.uniq.length == 1 }
     end
