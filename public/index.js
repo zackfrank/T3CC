@@ -336,7 +336,6 @@ var HomePage = {
 
       */
 
-
       this.moveAllowed = false; // this bar a player from taking a second turn before the next player goes
 
       // ----------- To account for minimax processing time ------------
@@ -361,7 +360,8 @@ var HomePage = {
             this.processHumanVsHumanMove(game);
             this.printMessage();
           } else if (this.gameType === 'hvc') {
-            this.message = this.player2.name + "'s turn!";
+            this.message = this.player2.name + "'s turn!"; // in 'hvc' game always switches to computer (player2)
+            this.hvcComputerResponse(game); // Human-like response from computer player is delivered to frontend w/correct timing
             this.processHumanVsComputerMove(game);
           } 
 
@@ -374,9 +374,6 @@ var HomePage = {
       this.moveAllowed = true; // allows move to be made since current player has been updated
     },
     processHumanVsComputerMove: function(game) {
-      // Human-like response from computer player is delivered to frontend
-      this.computerResponse = "Computer: " + game.computer_response;
-
       // Computer move is delayed to add element of realism to gameplay (as if computer is thinking)
       setTimeout(function() {
         this.displayComputerMove(this.player2.symbol, game.computer_move); // makes appropriate symbol visible on frontend
@@ -386,6 +383,24 @@ var HomePage = {
 
       this.checkForAndProcessGameOver(); // Check for win or tie after every move
       this.printMessage(); // Prints appropriate message after every move
+    },
+    hvcComputerResponse: function(game) {
+      /*
+      If computer ends game (from backend response), delay the game-ending message to
+      coincide with the delay in displaying the computer move. Otherwise display computer
+      message immediately since it is a response to human move.
+      */ 
+
+      if (this.computerEndsHvcGame()) {
+        this.computerResponse = "Computer: Looks like this game's about to end...";
+        setTimeout(function() {
+          console.log("Computer ends game.");
+          this.computerResponse = "Computer: " + game.computer_response;
+        }.bind(this), 1500);
+      } else {
+        console.log("Computer does not end game.");
+        this.computerResponse = "Computer: " + game.computer_response;
+      }
     },
     printMessage: function() {
       /* 
