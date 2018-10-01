@@ -104,25 +104,49 @@ var HomePage = {
       }
     },
     showDifficultyLevelModal: function() {
-      // returns boolean to either show or not show difficulty level modal at the correct time
+      /* 
+      Returns boolean to either show or not show difficulty level modal at the correct time:
+      
+      Game type has been chosen, game type is not hvh, and difficulty level has not yet been chosen
+      (difficulty level is not necessary when game is played between two humans)
+      */
       return this.gameType !== 'hvh' && this.gameType && !this.difficultyLevel;
     },
     showNamesModal: function() {
-      // returns boolean to show names modal at the correct time
+      /* 
+      Returns boolean to show names modal at the correct time:
+
+      Game type 'hvh' is chosen and names are not yet submitted
+      -- or --
+      Game type 'hvc' is chosen, difficulty level has been chosen, and names not yet submitted
+      */ 
+
       return (this.gameType === 'hvh' || (this.gameType === 'hvc' && this.difficultyLevel)) && !this.namesSubmitted;
     },
     showSymbolsModal: function() {
-      return (this.gameType && this.difficultyLevel && this.namesSubmitted && !this.symbols) || (this.gameType === 'cvc' && this.difficultyLevel && !this.symbols) || (this.gameType === 'hvh' && this.namesSubmitted && !this.symbols);
+      /* 
+      Returns boolean to show symbols modal at the correct time:
+      
+      Difficulty level has been chosen, names have been submitted, symbols not yet chosen (for 'hvc' game type)
+      -- or --
+      Game type is 'cvc', difficulty level has been chosen, symbols not yet chosen (names are auto-submitted for 'cvc')
+      -- or --
+      Game type is 'hvh', names are submitted, symbols not yet chosen (no difficulty level for 'hvh')
+      */
+      return (this.difficultyLevel && this.namesSubmitted && !this.symbols) || (this.gameType === 'cvc' && this.difficultyLevel && !this.symbols) || (this.gameType === 'hvh' && this.namesSubmitted && !this.symbols);
     },
     showWhoGoesFirstModal: function() {
-      return this.namesSubmitted && this.player1.name && !this.firstPlayerName && this.symbols;
+      /*
+      Returns boolean to show 'Who Goes First' modal at the correct time:
+
+      Names have been submitted, symbols have been chosen, first player has not yet been selected
+      */
+
+      return this.namesSubmitted && this.symbols && !this.firstPlayerName;
     },
     showStartGameModal: function() {
-      if (this.firstPlayerName && !this.start) {
-        return true;
-      } else {
-        return false;
-      }
+      // Returns boolean to show 'Start Game' modal when first player has been selected and game has not yet started
+      return this.firstPlayerName && !this.start;
     },
     submitNames: function() {
       /* For games involving human players (hvh & hvc):
