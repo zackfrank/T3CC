@@ -11,9 +11,24 @@ RSpec.describe Game, type: :model do
 
   it "creates new 'human vs human' game" do
     game = Game.new
+    player1 = Human.create
+    player1 = {
+        id: player1.id,
+        symbol: "X",
+        player_type: "Human"
+    }
+    player2 = Human.create
+    player2 = {
+        id: player2.id,
+        symbol: "O",
+        player_type: "Human"
+    }
     params = {
       game_type: "hvh",
-      board_id: 89
+      board_id: 89,
+      player1: player1,
+      player2: player2,
+      names: ["Alex", "Brian"]
     }
     game.setup(params)
     expect(game.game_type).to eq("hvh")
@@ -22,10 +37,25 @@ RSpec.describe Game, type: :model do
 
   it "creates new 'human vs computer' game" do
     game = Game.new
+    player1 = Human.create
+    player1 = {
+        id: player1.id,
+        symbol: "X",
+        player_type: "Human"
+    }
+    player2 = Computer.create
+    player2 = {
+        id: player2.id,
+        symbol: "O",
+        player_type: "Computer"
+    }
     params = {
       game_type: "hvc",
       level: "Easy",
-      board_id: 108
+      board_id: 108,
+      player1: player1,
+      player2: player2,
+      names: ["Charlie", "Computer"]
     }
     game.setup(params)
     expect(game.game_type).to eq("hvc")
@@ -35,10 +65,25 @@ RSpec.describe Game, type: :model do
 
   it "creates new 'computer vs computer' game" do
     game = Game.new
+    player1 = Computer.create
+    player1 = {
+        id: player1.id,
+        symbol: "X",
+        player_type: "Computer"
+    }
+    player2 = Computer.create
+    player2 = {
+        id: player2.id,
+        symbol: "O",
+        player_type: "Computer"
+    }
     params = {
       game_type: "cvc",
       level: "Hard",
-      board_id: 47
+      board_id: 47,
+      player1: player1,
+      player2: player2,
+      names: ["Computer 1", "Computer 2"]
     }
     game.setup(params)
     expect(game.game_type).to eq("cvc")
@@ -59,7 +104,19 @@ RSpec.describe Game, type: :model do
 
   it "sets up player symbols and names for hvh, player1 is 'X'" do
     game = Game.create(game_type: 'hvh')
-    game.player_setup(Human.create, Human.create, ["Zack", "Brad"], "player1")
+    player1 = Human.create
+    player2 = Human.create
+    player1 = {
+        id: player1.id,
+        symbol: "X",
+        player_type: "Human"
+    }
+    player2 = {
+        id: player2.id,
+        symbol: "O",
+        player_type: "Human"
+    }
+    game.player_setup(player1, player2, ["Zack", "Brad"])
     expect(game.player1.symbol).to eq("X")
     expect(game.player1.name).to eq("Zack")
     expect(game.player2.symbol).to eq("O")
@@ -70,7 +127,19 @@ RSpec.describe Game, type: :model do
 
   it "sets up player symbols and names for hvh, player1 is 'O'" do
     game = Game.create(game_type: 'hvh')
-    game.player_setup(Human.create, Human.create, ["Zack", "Brad"], "player2")
+    player1 = Human.create
+    player2 = Human.create
+    player1 = {
+        id: player1.id,
+        symbol: "O",
+        player_type: "Human"
+    }
+    player2 = {
+        id: player2.id,
+        symbol: "X",
+        player_type: "Human"
+    }
+    game.player_setup(player1, player2, ["Zack", "Brad"])
     expect(game.player1.symbol).to eq("O")
     expect(game.player1.name).to eq("Zack")
     expect(game.player2.symbol).to eq("X")
@@ -81,7 +150,19 @@ RSpec.describe Game, type: :model do
 
   it "sets up player symbols and names for cvh, player1 is 'X'" do
     game = Game.create(game_type: 'cvh')
-    game.player_setup(Human.create, Computer.create, ["Zack", "Brad"], "player1")
+    player1 = Human.create
+    player2 = Computer.create
+    player1 = {
+        id: player1.id,
+        symbol: "X",
+        player_type: "Human"
+    }
+    player2 = {
+        id: player2.id,
+        symbol: "O",
+        player_type: "Computer"
+    }
+    game.player_setup(player1, player2, ["Zack", "Brad"])
     expect(game.player1.symbol).to eq("X")
     expect(game.player1.name).to eq("Zack")
     expect(game.player2.symbol).to eq("O")
@@ -92,7 +173,19 @@ RSpec.describe Game, type: :model do
 
   it "sets up player symbols and names for cvc, player1 is 'O'" do
     game = Game.create(game_type: 'cvc')
-    game.player_setup(Computer.create, Computer.create, ["Donald", "Hillary"], "player2")
+    player1 = Computer.create
+    player2 = Computer.create
+    player1 = {
+        id: player1.id,
+        symbol: "O",
+        player_type: "Computer"
+    }
+    player2 = {
+        id: player2.id,
+        symbol: "X",
+        player_type: "Computer"
+    }
+    game.player_setup(player1, player2, ["Donald", "Hillary"])
     expect(game.player1.symbol).to eq("O")
     expect(game.player1.name).to eq("Donald")
     expect(game.player2.symbol).to eq("X")
@@ -148,31 +241,6 @@ RSpec.describe Game, type: :model do
     game.save
     game.switch_player(player2)
     expect(game.next_player).to eq(player1)
-  end
-
-# -------------------------------------------------------------------------------------------
-# TEST METHOD -- opposite_player(player)
-# Mostly replaced by Computer#opposite_player() - but used in Computer#get_best_medium_move()
-# -------------------------------------------------------------------------------------------
-
-  it "returns player2 if given player1" do
-    game = Game.create
-    player1 = Human.create(game_id: game.id)
-    player2 = Computer.create(game_id: game.id)
-    game.player1_id = player1.id
-    game.player2_id = player2.id
-    game.save
-    expect(game.opposite_player(player1)).to eq(player2)
-  end
-
-  it "returns player1 if given player2" do
-    game = Game.create
-    player1 = Human.create(game_id: game.id)
-    player2 = Computer.create(game_id: game.id)
-    game.player1_id = player1.id
-    game.player2_id = player2.id
-    game.save
-    expect(game.opposite_player(player2)).to eq(player1)
   end
 
 # ---------------------------------------------------------------------------

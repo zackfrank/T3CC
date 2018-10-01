@@ -8,6 +8,7 @@ var HomePage = {
       board: {},
       gameType: null,
       difficultyLevel: null,
+      symbols: null,
       player1: {
         name: "",
         symbol: ""
@@ -38,8 +39,11 @@ var HomePage = {
     };
   },
   created: function() {
-    /* Create a board on the backend, load corresponding numbers into each board space (ie board[1] === 1)
-    Load board into frontend */
+    /* 
+    Create a board on the backend
+    Load corresponding numbers into each board space (ie board[1] === 1)
+    Load board into frontend
+    */
     axios.post("v1/boards").then(
       function(response) {
         this.board = response.data;
@@ -99,6 +103,27 @@ var HomePage = {
         );
       }
     },
+    showDifficultyLevelModal: function() {
+      // returns boolean to either show or not show difficulty level modal at the correct time
+      return this.gameType !== 'hvh' && this.gameType && !this.difficultyLevel;
+    },
+    showNamesModal: function() {
+      // returns boolean to show names modal at the correct time
+      return (this.gameType === 'hvh' || (this.gameType === 'hvc' && this.difficultyLevel)) && !this.namesSubmitted;
+    },
+    showSymbolsModal: function() {
+      return (this.gameType && this.difficultyLevel && this.namesSubmitted && !this.symbols) || (this.gameType === 'cvc' && this.difficultyLevel && !this.symbols) || (this.gameType === 'hvh' && this.namesSubmitted && !this.symbols);
+    },
+    showWhoGoesFirstModal: function() {
+      return this.namesSubmitted && this.player1.name && !this.firstPlayerName && this.symbols;
+    },
+    showStartGameModal: function() {
+      if (this.firstPlayerName && !this.start) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     submitNames: function() {
       /* For games involving human players (hvh & hvc):
       If names are properly submitted, 
@@ -119,9 +144,13 @@ var HomePage = {
         }
       }
     },
-    setPlayer1Symbol: function(symbol) {
-      // Sets player1 symbol from Symbol modal on frontend
-      this.player1.symbol = symbol;
+    setSymbols: function(symbol) {
+      // Sets respsective player symbols from Symbol modal on frontend
+      if (symbol === "X") {
+        this.symbols = ["X", "O"];
+      } else {
+        this.symbols = ["O", "X"];
+      }
     },
     startGame: function() {
       /* Sends all game and player data to backend to set up game and start game
@@ -136,6 +165,7 @@ var HomePage = {
         game_type: this.gameType,
         level: this.difficultyLevel,
         names: [this.player1.name, this.player2.name],
+        symbols: this.symbols,
         board_id: this.board.id,
         player1: this.player1,
         player2: this.player2

@@ -7,7 +7,7 @@ class Console
     set_up
   end
 
-  def animation
+  def opening_animation
     def animation_frame1
       system "clear"
       puts "+- - - - - - - - - - - - - - - - - - - - - - - - - - - +"
@@ -54,7 +54,7 @@ class Console
   end
 
   def set_up
-    animation
+    # opening_animation
     player_setup
     if @player2['player_type'] == "Computer"
       set_difficulty_level
@@ -66,16 +66,23 @@ class Console
       game_type: @game_type,
       level: @difficulty_level,
       names: [@player1['name'], @player2['name']],
+      symbols: @symbols,
       board_id: @board['id'],
       player1: @player1,
       player2: @player2
     }
+    puts params
     @game = Unirest.post("http://localhost:3000/v1/games", parameters: params).body
 
     @player1 = @game['player1']
     @player2 = @game['player2']
     @first_player == 'player1' ? @current_player = @player1 : @current_player = @player2
     @game_is_over = false
+    # game_start_message
+    self.start_game
+  end
+
+  def game_start_message
     puts "Are you ready?!\n\n"
     sleep(1.5)
     puts "Let's play!\n\n"
@@ -86,7 +93,6 @@ class Console
     sleep(0.3)
     print "."
     sleep(0.5)
-    self.start_game
   end
 
   def player_setup
@@ -153,7 +159,6 @@ class Console
     puts "Great! You chose '#{@difficulty_level}'."
     puts "[Enter] to continue."
     gets.chomp
-    system "clear"
   end
 
   def name_players
@@ -191,24 +196,28 @@ class Console
     display_banner
     print "Please choose the symbol for #{@player1['name']}..."
     puts
-    until @player1['symbol'] == "X" || @player1['symbol'] == "O"
+    # until 
+    @symbols = []
+    until @symbols[0]
       puts "[1] for 'X'"
       puts "[2] for 'O'"
       print "Entry: "
       entry = gets.chomp.to_i
       if entry == 1
-        @player1['symbol'] = ("X")
-        @player2['symbol'] = ("O")
+        @symbols = ["X", "O"]
+        # @player1['symbol'] = ("X")
+        # @player2['symbol'] = ("O")
       elsif entry == 2
-        @player1['symbol'] = ("O")
-        @player2['symbol'] = ("X")
+        @symbols = ["O", "X"]
+        # @player1['symbol'] = ("O")
+        # @player2['symbol'] = ("X")
       else
         puts
         puts "You entered an invalid entry. Please try again:"
       end
     end
     puts
-    puts "Great choice! #{@player1['name']}'s symbol is '#{@player1['symbol']}' and #{@player2['name']}'s is '#{@player2['symbol']}'."
+    puts "Great choice! #{@player1['name']}'s symbol is '#{@symbols[0]}' and #{@player2['name']}'s is '#{@symbols[1]}'."
     puts "[Enter] to continue."
     gets.chomp
   end
@@ -391,7 +400,6 @@ class Console
     game = @game.dup
     
     Thread.new {
-      
       def sleep_and_print_unless_computer_is_ready(game, time, text)
         sleep(time)
         unless game != @game
@@ -405,7 +413,7 @@ class Console
         name = @current_player['name']
       end
 
-      until game != @game
+      until game != @game # ie. until patch request is complete after computer move has been processed
         display_banner
         pre_board_display
         print_board
@@ -441,6 +449,8 @@ class Console
   def computer_vs_computer
     cvc_first_move
     @cvc_round = 1
+    # @cvc_round is used in cvc_make_computer_move to determine when delay will occur due to minimax
+    # on round 3 on Hard level, computer_thinking() is called
 
     until @game['game_is_over']
       @cvc_round += 1

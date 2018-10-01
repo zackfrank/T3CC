@@ -3,6 +3,8 @@ class Game < ApplicationRecord
   has_many :computers
   belongs_to :board, optional: true
 
+  # setup() notes:
+  #
   # Used in Games#create method in the Games controller for post requests
   # Updates database with game parameters decided by user on frontend
   # Assumes board has already been created
@@ -10,7 +12,7 @@ class Game < ApplicationRecord
     self.game_type = params[:game_type]
     self.difficulty_level = params[:level]
     self.board_id = params[:board_id]
-    self.player_setup(params[:player1], params[:player2], params[:names])
+    self.player_setup(params[:player1], params[:player2], params[:names], params[:symbols])
   end
 
 
@@ -22,18 +24,13 @@ class Game < ApplicationRecord
   # Updates game_id for each player, player symbols, player names
   # Also saves id of each player in Games table to be used to pull players based on ids for patch requests
   # See player1 and player2 methods below to see how player ids are used
-  def player_setup(player1, player2, names)
+  def player_setup(player1, player2, names, symbols)
     player1[:player_type] == "Human" ? player1 = Human.find(player1[:id]) : player1 = Computer.find(player1[:id])
     player2[:player_type] == "Human" ? player2 = Human.find(player2[:id]) : player2 = Computer.find(player2[:id])
     player1.game_id = self.id
     player2.game_id = self.id
-    if player1[:symbol] == 'X'
-      player1.symbol = "X"
-      player2.symbol = "O"
-    else
-      player1.symbol = "O"
-      player2.symbol = "X"
-    end
+    player1.symbol = symbols[0]
+    player2.symbol = symbols[1]
     player1.name = names[0]
     player2.name = names[1]
     player1.save
@@ -45,9 +42,9 @@ class Game < ApplicationRecord
 
   # update() notes:
   #
-  # This is only used in the Games#update method in the Games controller for patch requests
+  # This is used in the Games#update method in the Games controller for every patch request
   # Human moves require params: space and player
-  # Computer moves require only player (since move/space is determined on backend)
+  # Computer moves require only player (since computer move is determined on backend)
   def update(params)
     params[:player][:id].to_i == player1.id ? player = player1 : player = player2 # identify player
     space = params[:space]
@@ -73,6 +70,7 @@ class Game < ApplicationRecord
   end
 
 
+  # ------------------------------------------------------
   # player1 and player2 query database to find 
   # player1 and player2 depending on game type
   # ------------------------------------------------------
@@ -94,6 +92,7 @@ class Game < ApplicationRecord
     return player2
   end
   # ------------------------------------------------------
+  # ------------------------------------------------------
 
 
   # updates board to register move human player made on frontend
@@ -102,14 +101,14 @@ class Game < ApplicationRecord
     self.board.save
   end
 
-  # sends message to Computer model to retrieve computer move appropriate to difficulty level
+  # sends message to Computer model to retrieve computer move according to difficulty level
   def make_computer_move(player)
     if difficulty_level == 'Easy'
-      @computer_move = player.easy_eval_board(self)
+      @computer_move = player.make_easy_move(self)
     elsif difficulty_level == 'Medium'
-      @computer_move = player.medium_eval_board(self)
+      @computer_move = player.make_medium_move(self)
     else
-      @computer_move = player.hard_eval_board(self)
+      @computer_move = player.make_hard_move(self)
     end
   end
 
@@ -118,7 +117,7 @@ class Game < ApplicationRecord
     current_player == player1 ? @next_player = player2 : @next_player = player1
   end
 
-  # returns true if game ends with winner or tie
+  # boolean: returns true if game ends with either winner or tie
   def game_is_over(board)
     someone_wins(board) || tie(board)
   end
@@ -173,12 +172,12 @@ class Game < ApplicationRecord
       ]
     end
 
-    # used in game_is_over; returns true if there is a winner
+    # used in game_is_over; boolean: returns true if there is a winner
     def someone_wins(board)
       winning_possibilities(board).any? {|possible_win| possible_win.uniq.length == 1 }
     end
 
-    # returns boolean if there is a tie
+    # boolean: returns true if there is a tie
     def tie(board)
       board.spaces_array.all? { |s| s == "X" || s == "O" } && !winner(board)
     end

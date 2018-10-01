@@ -39,7 +39,7 @@
     <!-- End of Modal -->
 
     <!-- Diffictulty Level Modal -->
-    <div id="modal" class="modal" v-if="gameType !== 'hvh' && gameType && !difficultyLevel">
+    <div id="modal" class="modal" v-if="showDifficultyLevelModal()">
       <div class="modal-content">
         <h2>Please Choose a Difficulty Level</h2>
         <h3>Choose from the options below...</h3>
@@ -55,7 +55,7 @@
     <!-- End of Modal -->
 
     <!-- Names Modal -->
-    <div id="modal" class="modal" v-if="(gameType === 'hvh' || (gameType === 'hvc' && difficultyLevel)) && !namesSubmitted">
+    <div id="modal" class="modal" v-if="showNamesModal()">
       <div class="modal-content">
         <h2>Please Enter Name(s)</h2>
         <label for="player1name">Player 1 Name:</label>
@@ -71,20 +71,20 @@
     <!-- End of Modal -->
 
     <!-- Choose Symbol Modal -->
-    <div id="modal" class="modal" v-if="(gameType && difficultyLevel && namesSubmitted && !player1.symbol) || (gameType === 'cvc' && difficultyLevel && !player1.symbol) || (gameType === 'hvh' && namesSubmitted && !player1.symbol)">
+    <div id="modal" class="modal" v-if="showSymbolsModal()">
       <div class="modal-content">
         <h2>Please Choose Symbol for {{player1.name}}</h2>
         <h3>Choose from the options below...</h3>
         <div class="symbols">
-          <img src="img/X.png" @click="setPlayer1Symbol('X')" class="symbolButton">
-          <img src="img/O.png" @click="setPlayer1Symbol('O')" class="symbolButton">
+          <img src="img/X.png" @click="setSymbols('X')" class="symbolButton">
+          <img src="img/O.png" @click="setSymbols('O')" class="symbolButton">
         </div>
       </div>
     </div>
     <!-- End of Modal -->
 
     <!-- Who Goes First Modal -->
-    <div id="modal" class="modal" v-if="namesSubmitted && player1.name && !firstPlayerName && player1.symbol">
+    <div id="modal" class="modal" v-if="showWhoGoesFirstModal()">
       <div class="modal-content">
         <h2>Please Choose Who Goes First</h2>
         <h3>Choose from the options below...</h3>
@@ -99,7 +99,7 @@
     <!-- End of Modal -->
 
     <!-- Start Game Modal -->
-    <div id="modal" class="modal" v-if="firstPlayerName && !start">
+    <div id="modal" class="modal" v-if="showStartGameModal()">
       <div class="modal-content" id="centered-modal">
         <h2>Ready to play?</h2>
         <h3>Here we go...</h3>
