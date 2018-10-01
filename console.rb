@@ -54,9 +54,9 @@ class Console
   end
 
   def set_up
-    opening_animation
-    player_setup
-    if @player2['player_type'] == "Computer"
+    # opening_animation
+    player_and_game_type_setup
+    if @game_type != "hvh"
       set_difficulty_level
     end
     name_players
@@ -82,6 +82,7 @@ class Console
   end
 
   def game_start_message
+    display_banner
     puts "Are you ready?!\n\n"
     sleep(1.5)
     puts "Let's play!\n\n"
@@ -94,20 +95,20 @@ class Console
     sleep(0.5)
   end
 
-  def player_setup
-    display_banner
+  def player_and_game_type_setup
     game_types = [
       "[1] Human vs. Human",
       "[2] Human vs. Computer",
       "[3] Computer vs. Computer"
     ]
-    puts "Please choose a game type:"
-    puts "#{game_types[0]}"
-    puts "#{game_types[1]}"
-    puts "#{game_types[2]}"
-    print "Entry: "
-    entry = gets.chomp.to_i
     until @player1 do
+      display_banner
+      puts "Please choose a game type:"
+      puts "#{game_types[0]}"
+      puts "#{game_types[1]}"
+      puts "#{game_types[2]}"
+      print "Entry: "
+      entry = gets.chomp.to_i
       if entry == 1
         @player1 = Unirest.post("http://localhost:3000/v1/humen").body
         @player2 = Unirest.post("http://localhost:3000/v1/humen").body
@@ -122,8 +123,8 @@ class Console
         @game_type = 'cvc'
       else
         puts
-        puts "You entered an invalid entry. Please choose [1] [2] or [3]:"
-        entry = gets.chomp.to_i
+        puts "You entered an invalid entry. [Enter] to try again."
+        gets.chomp
       end
     end
     puts
@@ -133,15 +134,15 @@ class Console
   end
 
   def set_difficulty_level
-    display_banner
-    puts "Please choose a difficulty level:"
-    puts "[1] Easy"
-    puts "[2] Medium"
-    puts "[3] Hard"
-    print "Entry: "
-    entry = gets.chomp.to_i
     @difficulty_level = nil
     until @difficulty_level do
+      display_banner
+      puts "Please choose a difficulty level:"
+      puts "[1] Easy"
+      puts "[2] Medium"
+      puts "[3] Hard"
+      print "Entry: "
+      entry = gets.chomp.to_i
       if entry == 1
         @difficulty_level = "Easy"
       elsif entry == 2
@@ -150,8 +151,8 @@ class Console
         @difficulty_level = "Hard"
       else
         puts
-        puts "You entered an invalid entry. Please choose [1] [2] or [3]:"
-        entry = gets.chomp.to_i
+        puts "You entered an invalid entry. [Enter] to try again."
+        gets.chomp
       end
     end
     puts
@@ -166,7 +167,8 @@ class Console
       print "Player 1, please enter your name: "
       name = gets.chomp
       until name != ""
-        print "Please enter at least one alphanumeric character as your name: "
+        puts
+        puts "Please enter at least one alphanumeric character as your name: "
         name = gets.chomp
       end
       @player1['name'] = name
@@ -178,7 +180,8 @@ class Console
       print "Please enter a name for Player 2: "
       name = gets.chomp
       until name != ""
-        print "Please enter at least one alphanumeric character to name Player 2: "
+        puts
+        puts "Please enter at least one alphanumeric character to name Player 2: "
         name = gets.chomp
       end
       @player2['name'] = name
@@ -192,11 +195,11 @@ class Console
   end
 
   def choose_symbol
-    display_banner
-    print "Please choose the symbol for #{@player1['name']}..."
-    puts
     @symbols = []
     until @symbols[0]
+      display_banner
+      print "Please choose the symbol for #{@player1['name']}..."
+      puts
       puts "[1] for 'X'"
       puts "[2] for 'O'"
       print "Entry: "
@@ -207,7 +210,8 @@ class Console
         @symbols = ["O", "X"]
       else
         puts
-        puts "You entered an invalid entry. Please try again:"
+        puts "You entered an invalid entry. [Enter] to try again."
+        gets.chomp
       end
     end
     puts
@@ -217,25 +221,27 @@ class Console
   end
 
   def who_goes_first
-    display_banner
-    puts "Who goes first?"
-    puts "[1] #{@player1['name']}"
-    puts "[2] #{@player2['name']}"
-    print "Entry: "
-    entry = gets.chomp.to_i
     until @first_player
+      display_banner
+      puts "Who goes first?"
+      puts "[1] #{@player1['name']}"
+      puts "[2] #{@player2['name']}"
+      print "Entry: "
+      entry = gets.chomp.to_i
       if entry == 1
         @first_player = 'player1'
+        puts
         puts "Great! #{@player1['name']} will go first."
       elsif entry == 2
         @first_player = 'player2'
+        puts
         puts "Great! #{@player2['name']} will go first."
       else
-        print "You entered an invalid entry, please choose [1] or [2]: "
-        entry = gets.chomp.to_i
+        puts
+        puts "You entered an invalid entry. [Enter] to try again."
+        gets.chomp
       end
     end
-    puts
     puts "[Enter] to continue."
     gets.chomp
   end

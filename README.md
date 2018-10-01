@@ -64,7 +64,7 @@ To run the browser frontend:
 
 To run the console frontend: 
 - Navigate to the project folder in your console and run file called 'run_console.rb':
- $ ruby run_console.rb
+ [T3CC]$ ruby run_console.rb
 ----------------------------------------------------------------------------------------------------------------
 
 
