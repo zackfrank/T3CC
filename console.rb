@@ -71,7 +71,6 @@ class Console
       player1: @player1,
       player2: @player2
     }
-    puts params
     @game = Unirest.post("http://localhost:3000/v1/games", parameters: params).body
 
     @player1 = @game['player1']
@@ -196,7 +195,6 @@ class Console
     display_banner
     print "Please choose the symbol for #{@player1['name']}..."
     puts
-    # until 
     @symbols = []
     until @symbols[0]
       puts "[1] for 'X'"
@@ -205,12 +203,8 @@ class Console
       entry = gets.chomp.to_i
       if entry == 1
         @symbols = ["X", "O"]
-        # @player1['symbol'] = ("X")
-        # @player2['symbol'] = ("O")
       elsif entry == 2
         @symbols = ["O", "X"]
-        # @player1['symbol'] = ("O")
-        # @player2['symbol'] = ("X")
       else
         puts
         puts "You entered an invalid entry. Please try again:"
@@ -363,7 +357,7 @@ class Console
         break
       end
       get_human_spot
-      if @game['winner'] == @player1 || @game['tie']
+      if @game['winner'] == @player1 || (@game['tie'] && @game['computer_move'] === nil)
         end_of_game
         break
       end
@@ -592,6 +586,7 @@ class Console
       level: @difficulty_level,
       names: [@player1['name'], @player2['name']],
       board_id: @board['id'],
+      symbols: @symbols,
       player1: @player1,
       player2: @player2
     }
