@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe Computer, type: :model do
 
 # --------------------------------------------------------------------------------
-# TEST METHODS - responses() // selected_response(game) // game_over_message(game)
+# TEST METHODS - selected_response(game) // game_over_message(game)
+# responses() IS A PRIVATE METHOD
 # --------------------------------------------------------------------------------
 
   it "returns the string 'Here we go!' when game is started" do
@@ -19,21 +20,23 @@ RSpec.describe Computer, type: :model do
     expect(player2.selected_response(game)).to eq("Here we go!")
   end
 
-  it "returns a random string from responses() at any point in game that is not the start or end" do
-    board = Board.create
-    game = Game.create(board_id: board.id, difficulty_level: "Hard", game_type: 'hvc')
-    game.board.setup
-    player1 = Human.create(game_id: game.id, symbol: "X")
-    player2 = Computer.create(game_id: game.id, symbol: "O")
-    game.player1_id = player1.id
-    game.player2_id = player2.id
-    game.save
-    game.board[0] = "O"
-    game.board[1] = "X"
-    game.board[2] = "O"
-    game.board[3] = "X"
-    expect(player2.responses.include? player2.selected_response(game)).to eq(true)
-  end
+  # PRIVATE METHOD:
+  #
+  # it "returns a random string from responses() at any point in game that is not the start or end" do
+  #   board = Board.create
+  #   game = Game.create(board_id: board.id, difficulty_level: "Hard", game_type: 'hvc')
+  #   game.board.setup
+  #   player1 = Human.create(game_id: game.id, symbol: "X")
+  #   player2 = Computer.create(game_id: game.id, symbol: "O")
+  #   game.player1_id = player1.id
+  #   game.player2_id = player2.id
+  #   game.save
+  #   game.board[0] = "O"
+  #   game.board[1] = "X"
+  #   game.board[2] = "O"
+  #   game.board[3] = "X"
+  #   expect(player2.responses.include? player2.selected_response(game)).to eq(true)
+  # end
 
   it "returns appropriate game_over_message when player1 wins" do
     board = Board.create

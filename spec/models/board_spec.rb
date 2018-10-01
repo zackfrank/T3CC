@@ -119,69 +119,72 @@ RSpec.describe Board, type: :model do
     expect(board.corners).to eq(["G", "A", "M", "E"])
   end
 
-# ------------------------
-# TEST METHOD - edges()
-# ------------------------
+# ---------------------------------------
+# TEST METHOD - edges() - PRIVATE METHOD
+# TESTED BELOW UNDER edge_taken()
+# ---------------------------------------
 
-  it "creates array of all four edges" do
-    board = Board.new
-    board.setup
-    board[0] = "X"
-    board[1] = "O"
-    board[2] = "X"
-    board[3] = "O"
-    board[4] = "O"
-    board[5] = "O"
-    board[6] = "X"
-    board[7] = "O"
-    board[8] = "X"
-    expect(board.edges).to eq(["O", "O", "O", "O"])
-  end
+  # PRIVATE METHOD:
+  # 
+  # it "creates array of all four edges" do
+  #   board = Board.new
+  #   board.setup
+  #   board[0] = "X"
+  #   board[1] = "O"
+  #   board[2] = "X"
+  #   board[3] = "O"
+  #   board[4] = "O"
+  #   board[5] = "O"
+  #   board[6] = "X"
+  #   board[7] = "O"
+  #   board[8] = "X"
+  #   expect(board.edges).to eq(["O", "O", "O", "O"])
+  # end
 
-  it "creates array of all four edges" do
-    board = Board.new
-    board.setup
-    board[0] = "X"
-    board[1] = "X"
-    board[2] = "O"
-    board[3] = "O"
-    board[4] = "O"
-    board[5] = "X"
-    board[6] = "X"
-    board[7] = "O"
-    board[8] = "O"
-    expect(board.edges).to eq(["X", "O", "X", "O"])
-  end
+  # it "creates array of all four edges" do
+  #   board = Board.new
+  #   board.setup
+  #   board[0] = "X"
+  #   board[1] = "X"
+  #   board[2] = "O"
+  #   board[3] = "O"
+  #   board[4] = "O"
+  #   board[5] = "X"
+  #   board[6] = "X"
+  #   board[7] = "O"
+  #   board[8] = "O"
+  #   expect(board.edges).to eq(["X", "O", "X", "O"])
+  # end
 
-  it "creates array of all four edges" do
-    board = Board.new
-    board.setup
-    board[0] = "O"
-    board[1] = "O"
-    board[2] = "X"
-    board[3] = "X"
-    board[4] = "O"
-    board[5] = "X"
-    board[6] = "X"
-    board[7] = "O"
-    board[8] = "O"
-    expect(board.edges).to eq(["O", "X", "X", "O"])
-  end
+  # it "creates array of all four edges" do
+  #   board = Board.new
+  #   board.setup
+  #   board[0] = "O"
+  #   board[1] = "O"
+  #   board[2] = "X"
+  #   board[3] = "X"
+  #   board[4] = "O"
+  #   board[5] = "X"
+  #   board[6] = "X"
+  #   board[7] = "O"
+  #   board[8] = "O"
+  #   expect(board.edges).to eq(["O", "X", "X", "O"])
+  # end
 
-  it "creates array of all four edges" do
-    board = Board.new
-    board.setup
-    board[0] = "O"
-    board[1] = "G"
-    board[2] = "X"
-    board[3] = "A"
-    board[4] = "O"
-    board[5] = "M"
-    board[6] = "X"
-    board[7] = "E"
-    board[8] = "X"
-    expect(board.edges).to eq(["G", "A", "M", "E"])
-  end
+  # it "creates array of all four edges" do
+  #   board = Board.new
+  #   board.setup
+  #   board[0] = "O"
+  #   board[1] = "G"
+  #   board[2] = "X"
+  #   board[3] = "A"
+  #   board[4] = "O"
+  #   board[5] = "M"
+  #   board[6] = "X"
+  #   board[7] = "E"
+  #   board[8] = "X"
+  #   expect(board.edges).to eq(["G", "A", "M", "E"])
+  # end
 
 # ------------------------
 # TEST METHOD - center_taken()
@@ -342,11 +345,11 @@ RSpec.describe Board, type: :model do
     expect(board.corner_taken).to eq(false)
   end
 
-# ----------------------------
+# --------------------------------------------
 # TEST METHOD - edge_taken()
 #
-# uses 'edges()'
-# ----------------------------
+# uses 'edges()' (PRIVATE METHOD TESTED HERE)
+# --------------------------------------------
 
   it "returns true since top edge is taken by 'X'" do
     board = Board.new

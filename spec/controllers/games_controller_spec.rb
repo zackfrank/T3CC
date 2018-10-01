@@ -15,7 +15,7 @@ RSpec.describe V1::GamesController, type: :controller do
         :game_type => 'hvh', 
         :board_id => @board.id, 
         :names => ["Zack", "Daniel"], 
-        :who_is_x => 'player1', 
+        :symbols => ["X", "O"],
         :first => 'player1'
       }
       expect(Game.last.game_type).to eq('hvh')
@@ -36,7 +36,7 @@ RSpec.describe V1::GamesController, type: :controller do
         :level => 'Easy',
         :board_id => @board.id, 
         :names => ["Brad", "Charles"], 
-        :who_is_x => 'player2', 
+        :symbols => ["O", "X"],
         :first => 'player2'
       }
       expect(Game.last.game_type).to eq('hvc')
@@ -58,7 +58,7 @@ RSpec.describe V1::GamesController, type: :controller do
         :level => 'Medium',
         :board_id => @board.id, 
         :names => ["David", "Elliot"], 
-        :who_is_x => 'player2', 
+        :symbols => ["O", "X"],
         :first => 'player2'
       }
       expect(Game.last.game_type).to eq('cvc')
@@ -89,7 +89,7 @@ RSpec.describe V1::GamesController, type: :controller do
         :game_type => 'hvh', 
         :board_id => @board.id, 
         :names => ["Fred", "George"], 
-        :who_is_x => 'player2', 
+        :symbols => ["O", "X"]
       }
       patch :update, params: 
       {
@@ -108,7 +108,7 @@ RSpec.describe V1::GamesController, type: :controller do
         :level => 'Easy',
         :board_id => @board.id, 
         :names => ["Hector", "Isaac"], 
-        :who_is_x => 'player1', 
+        :symbols => ["X", "O"],
       }
       patch :update, params: 
       {
@@ -126,7 +126,7 @@ RSpec.describe V1::GamesController, type: :controller do
         :level => 'Medium',
         :board_id => @board.id, 
         :names => ["Hector", "Isaac"], 
-        :who_is_x => 'player1', 
+        :symbols => ["X", "O"],
       }
       patch :update, params: 
       {

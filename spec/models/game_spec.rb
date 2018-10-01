@@ -14,13 +14,11 @@ RSpec.describe Game, type: :model do
     player1 = Human.create
     player1 = {
         id: player1.id,
-        symbol: "X",
         player_type: "Human"
     }
     player2 = Human.create
     player2 = {
         id: player2.id,
-        symbol: "O",
         player_type: "Human"
     }
     params = {
@@ -28,6 +26,7 @@ RSpec.describe Game, type: :model do
       board_id: 89,
       player1: player1,
       player2: player2,
+      symbols: ["X", "O"],
       names: ["Alex", "Brian"]
     }
     game.setup(params)
@@ -40,13 +39,11 @@ RSpec.describe Game, type: :model do
     player1 = Human.create
     player1 = {
         id: player1.id,
-        symbol: "X",
         player_type: "Human"
     }
     player2 = Computer.create
     player2 = {
         id: player2.id,
-        symbol: "O",
         player_type: "Computer"
     }
     params = {
@@ -55,6 +52,7 @@ RSpec.describe Game, type: :model do
       board_id: 108,
       player1: player1,
       player2: player2,
+      symbols: ["X", "O"],
       names: ["Charlie", "Computer"]
     }
     game.setup(params)
@@ -68,13 +66,11 @@ RSpec.describe Game, type: :model do
     player1 = Computer.create
     player1 = {
         id: player1.id,
-        symbol: "X",
         player_type: "Computer"
     }
     player2 = Computer.create
     player2 = {
         id: player2.id,
-        symbol: "O",
         player_type: "Computer"
     }
     params = {
@@ -83,6 +79,7 @@ RSpec.describe Game, type: :model do
       board_id: 47,
       player1: player1,
       player2: player2,
+      symbols: ["X", "O"],
       names: ["Computer 1", "Computer 2"]
     }
     game.setup(params)
@@ -108,15 +105,13 @@ RSpec.describe Game, type: :model do
     player2 = Human.create
     player1 = {
         id: player1.id,
-        symbol: "X",
         player_type: "Human"
     }
     player2 = {
         id: player2.id,
-        symbol: "O",
         player_type: "Human"
     }
-    game.player_setup(player1, player2, ["Zack", "Brad"])
+    game.player_setup(player1, player2, ["Zack", "Brad"], ["X", "O"],)
     expect(game.player1.symbol).to eq("X")
     expect(game.player1.name).to eq("Zack")
     expect(game.player2.symbol).to eq("O")
@@ -131,15 +126,13 @@ RSpec.describe Game, type: :model do
     player2 = Human.create
     player1 = {
         id: player1.id,
-        symbol: "O",
         player_type: "Human"
     }
     player2 = {
         id: player2.id,
-        symbol: "X",
         player_type: "Human"
     }
-    game.player_setup(player1, player2, ["Zack", "Brad"])
+    game.player_setup(player1, player2, ["Zack", "Brad"], ["O", "X"],)
     expect(game.player1.symbol).to eq("O")
     expect(game.player1.name).to eq("Zack")
     expect(game.player2.symbol).to eq("X")
@@ -154,15 +147,13 @@ RSpec.describe Game, type: :model do
     player2 = Computer.create
     player1 = {
         id: player1.id,
-        symbol: "X",
         player_type: "Human"
     }
     player2 = {
         id: player2.id,
-        symbol: "O",
         player_type: "Computer"
     }
-    game.player_setup(player1, player2, ["Zack", "Brad"])
+    game.player_setup(player1, player2, ["Zack", "Brad"], ["X", "O"],)
     expect(game.player1.symbol).to eq("X")
     expect(game.player1.name).to eq("Zack")
     expect(game.player2.symbol).to eq("O")
@@ -177,15 +168,13 @@ RSpec.describe Game, type: :model do
     player2 = Computer.create
     player1 = {
         id: player1.id,
-        symbol: "O",
         player_type: "Computer"
     }
     player2 = {
         id: player2.id,
-        symbol: "X",
         player_type: "Computer"
     }
-    game.player_setup(player1, player2, ["Donald", "Hillary"])
+    game.player_setup(player1, player2, ["Donald", "Hillary"], ["O", "X"])
     expect(game.player1.symbol).to eq("O")
     expect(game.player1.name).to eq("Donald")
     expect(game.player2.symbol).to eq("X")
@@ -197,8 +186,9 @@ RSpec.describe Game, type: :model do
 # -------------------------------------------------------------------------------------
 # TEST METHODS -- switch_player(player) // next_player
 # 'switch_player()' used to setup next_player which is sent to frontend
-# 'switch_player()' requires previous player as argument and is used in controller
+# 'switch_player()' requires previous player as argument
 # thus - 'next_player' is set using instance variable @next_player to be used in as_json
+# next_player() IS A PRIVATE METHOD
 # -------------------------------------------------------------------------------------
 
   it "switches from player1 to player2" do
@@ -221,27 +211,29 @@ RSpec.describe Game, type: :model do
     expect(game.switch_player(player2)).to eq(player1)
   end
 
-  it "returns player2 as the next player" do
-    game = Game.create
-    player1 = Human.create(game_id: game.id)
-    player2 = Computer.create(game_id: game.id)
-    game.player1_id = player1.id
-    game.player2_id = player2.id
-    game.save
-    game.switch_player(player1)
-    expect(game.next_player).to eq(player2)
-  end
+  # PRIVATE METHOD:
+  # 
+  # it "returns player2 as the next player" do
+  #   game = Game.create
+  #   player1 = Human.create(game_id: game.id)
+  #   player2 = Computer.create(game_id: game.id)
+  #   game.player1_id = player1.id
+  #   game.player2_id = player2.id
+  #   game.save
+  #   game.switch_player(player1)
+  #   expect(game.next_player).to eq(player2)
+  # end
 
-  it "returns player1 as the next player" do
-    game = Game.create
-    player1 = Human.create(game_id: game.id)
-    player2 = Computer.create(game_id: game.id)
-    game.player1_id = player1.id
-    game.player2_id = player2.id
-    game.save
-    game.switch_player(player2)
-    expect(game.next_player).to eq(player1)
-  end
+  # it "returns player1 as the next player" do
+  #   game = Game.create
+  #   player1 = Human.create(game_id: game.id)
+  #   player2 = Computer.create(game_id: game.id)
+  #   game.player1_id = player1.id
+  #   game.player2_id = player2.id
+  #   game.save
+  #   game.switch_player(player2)
+  #   expect(game.next_player).to eq(player1)
+  # end
 
 # ---------------------------------------------------------------------------
 # TEST METHOD -- make_human_move(player, space)
@@ -437,6 +429,7 @@ RSpec.describe Game, type: :model do
 # TEST METHODS -- make_computer_move(player) // Computer#hard_eval_board(game)
 # TEST METHODS -- setup(params) // Computer#expedite_first_minimax_spot(board)
 # TEST METHODS -- winning_possibilities(board) // someone_wins(board) // tie(board) // game_is_over(board)
+# 
 # 'Computer#hard_eval_board(game)' uses Minimax algorithm to determine absolute best move
 # based on every possible outcome of every possible combination of moves, then returns move that will 
 # both prolong the game and lead to Computer win or tie if win is impossible
@@ -506,11 +499,10 @@ RSpec.describe Game, type: :model do
     game.player1_id = player1.id
     game.player2_id = player2.id
     game.save
-    game.board[game.board.edges[rand(0..3)]] = "X"
-    first_spot = game.board.first_move
+    game.board[1] = "X"
     game.make_computer_move(player2)
     comp_move = game.board.spaces_array.index("O")
-    expected_comp_move = game.board.edge_first_minimax_moves[first_spot]
+    expected_comp_move = game.board.edge_first_minimax_moves[1]
     expect(comp_move).to eq(expected_comp_move)
   end
 
@@ -523,11 +515,10 @@ RSpec.describe Game, type: :model do
     game.player1_id = player1.id
     game.player2_id = player2.id
     game.save
-    game.board[game.board.edges[rand(0..3)]] = "O"
-    first_spot = game.board.first_move
+    game.board[3] = "O"
     game.make_computer_move(player2)
     comp_move = game.board.spaces_array.index("X")
-    expected_comp_move = game.board.edge_first_minimax_moves[first_spot]
+    expected_comp_move = game.board.edge_first_minimax_moves[3]
     expect(comp_move).to eq(expected_comp_move)
   end
 
@@ -599,8 +590,8 @@ RSpec.describe Game, type: :model do
     game.make_computer_move(player1)
     game.make_computer_move(player2)
     game.make_computer_move(player1)
-    expect(game.tie(game.board)).to eq(true)
-    expect(game.someone_wins(game.board)).to eq(false)
+    # expect(game.tie(game.board)).to eq(true) # tie() IS A PRIVATE METHOD
+    # expect(game.someone_wins(game.board)).to eq(false) # someone_wins() IS A PRIVATE METHOD
     expect(game.game_is_over(game.board)).to eq(true)
   end
 

@@ -54,7 +54,7 @@ class Console
   end
 
   def set_up
-    # opening_animation
+    opening_animation
     player_setup
     if @player2['player_type'] == "Computer"
       set_difficulty_level
@@ -77,7 +77,7 @@ class Console
     @player2 = @game['player2']
     @first_player == 'player1' ? @current_player = @player1 : @current_player = @player2
     @game_is_over = false
-    # game_start_message
+    game_start_message
     self.start_game
   end
 
