@@ -68,7 +68,7 @@ To run the console frontend:
 ----------------------------------------------------------------------------------------------------------------
 
 
-Author: Zack Frank
-Email: frank.zack@gmail.com
-Linkedin: https://www.linkedin.com/in/zack-frank/
-Github: https://github.com/zackfrank/
+- Author: Zack Frank
+- Email: frank.zack@gmail.com
+- Linkedin: https://www.linkedin.com/in/zack-frank/
+- Github: https://github.com/zackfrank/
