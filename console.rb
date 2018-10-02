@@ -134,7 +134,6 @@ class Console
   end
 
   def set_difficulty_level
-    @difficulty_level = nil
     until @difficulty_level do
       display_banner
       puts "Please choose a difficulty level:"
@@ -271,7 +270,7 @@ class Console
 
     until @game_is_over
       display_banner
-      pre_board_display
+      display_spot_taken_and_whose_turn
       update_board
       print_board
       get_human_spot
@@ -279,7 +278,7 @@ class Console
     end_of_game
   end
 
-  def pre_board_display
+  def display_spot_taken_and_whose_turn
     if @game_type == 'hvh'
       if @game['next_player']
         puts "#{@current_player['name']} chose: #{@space} - the #{spots[@space]} space."
@@ -354,7 +353,7 @@ class Console
 
     while true
       display_banner
-      pre_board_display
+      display_spot_taken_and_whose_turn
       print_board
       hvc_make_computer_move
       if @game['winner'] == @player2 || @game['tie']
@@ -364,6 +363,8 @@ class Console
       end
       get_human_spot
       if @game['winner'] == @player1 || (@game['tie'] && @game['computer_move'] === nil)
+        # if after user move is submitted in patch request there is a tie, it could be from
+        # either human or computer move - if no computer move was made then human ended game
         end_of_game
         break
       end
@@ -397,6 +398,10 @@ class Console
   end
 
   def computer_thinking
+    # Creates a separate thread so that while patch request is processing, this function can
+    # run concurrently to show animation that prints: "Computer is thinking..."
+    # This way user doesn't feel that the program has froze if patch requests takes a long time, 
+    # ie while minimax is processing on the backend.
     game = @game.dup
     
     Thread.new {
@@ -413,9 +418,9 @@ class Console
         name = @current_player['name']
       end
 
-      until game != @game # ie. until patch request is complete after computer move has been processed
+      until game != @game # until patch request is complete after computer move has been processed
         display_banner
-        pre_board_display
+        display_spot_taken_and_whose_turn
         print_board
         sleep_and_print_unless_computer_is_ready(game, 0, "#{name} is thinking")
         sleep_and_print_unless_computer_is_ready(game, 1, ".")
@@ -427,13 +432,10 @@ class Console
   end
 
   def hvc_make_computer_move
-    if @game['game_is_over']
-      puts "Computer: Looks like this game's about to end..."
-    else
-      puts "Computer: #{@game['computer_response']}"
-    end
-    puts "[Enter] to make computer move"
-    gets.chomp
+    # This allows user to decide when to view computer move, rather than computer move 
+    # appearing after a hard-coded amount of time.
+
+    print_computer_response
 
     display_banner
     puts "Computer: I took #{@game['computer_move']}, the #{spots[@game['computer_move']]} space."
@@ -450,15 +452,15 @@ class Console
     cvc_first_move
     @cvc_round = 1
     # @cvc_round is used in cvc_make_computer_move to determine when delay will occur due to minimax
-    # on round 3 on Hard level, computer_thinking() is called
+    # on round 3 on Hard level (which takes additional time to process), computer_thinking() is called
 
     until @game['game_is_over']
       @cvc_round += 1
       display_banner
-      pre_board_display
+      display_spot_taken_and_whose_turn
       print_board
-      print_cvc_response
       cvc_make_computer_move
+      print_computer_response
     end
     end_of_game
   end
@@ -479,11 +481,24 @@ class Console
     update_current_player
   end
 
-  def print_cvc_response
+  def print_computer_response
+    # Response depends on whether or not game is about to end.
+    # Computer name depends on game type.
+
     if @game['game_is_over']
-      puts "#{@current_player['name']}: Looks like this game's about to end..."
+      if @game_type == 'hvc'
+        print "Computer: "
+      elsif @game_type == 'cvc'
+        print "#{@next_player['name']}: "
+      end
+      print "Looks like this game's about to end...\n"
     else
-      puts "#{@current_player['name']}: #{@game['computer_response']}"
+      if @game_type == 'hvc'
+        print "Computer: "
+      elsif @game_type == 'cvc'
+        print "#{@next_player['name']}: "
+      end
+      print "#{@game['computer_response']}\n"
     end
     puts "[Enter] to view computer move"
     gets.chomp
@@ -500,6 +515,7 @@ class Console
 
     @space = @game['computer_move']
     @previous_player = @current_player.dup
+    @next_player = @current_player.dup
     update_current_player
   end
 
@@ -539,7 +555,7 @@ class Console
     elsif @game_type == 'hvc'
       puts "*** Computer: #{@game['computer_response']} ***\n\n"
     elsif @game_type == 'cvc'
-      puts "*** #{@previous_player['name']}: #{@game['computer_response']} ***\n\n"
+      puts "*** #{@current_player['name']}: #{@game['computer_response']} ***\n\n"
     end
     puts "What would you like to do?"
     puts "[1] For a rematch"
