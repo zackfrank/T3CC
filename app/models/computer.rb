@@ -109,12 +109,16 @@ class Computer < ApplicationRecord
     # 'Computer' always displays positive sportsmanship
     # 'Computer' always wants to play again!
     def game_over_message(game)
-      if game.winner(game.board) == game.player1
-        return "Great job #{game.player1.name}! Let's play again!"
-      elsif game.winner(game.board) == game.player2
-        return "I win! Nice try #{game.player1.name}! Let's play again!"
+      if game.game_type == "hvc"
+        if game.winner(game.board) == game.player1
+          return "Great job #{game.player1.name}! Let's play again!"
+        elsif game.winner(game.board) == game.player2
+          return "I win! Nice try #{game.player1.name}! Let's play again!"
+        else
+          return "It was a tie! Let's play again!"
+        end
       else
-        return "It was a tie! Let's play again!"
+        return "Good game! Let's play again!"
       end
     end
 
