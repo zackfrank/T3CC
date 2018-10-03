@@ -29,6 +29,10 @@ Project requires postgres database (no seeding necessary).
 In gemfile: 
 gem 'pg', '>= 0.18', '< 2.0'
 
+Be sure to run the following after cloning:
+- [T3CC]$ rails db:create
+- [T3CC]$ rails db:migrate
+
 ----------------------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------------------
@@ -39,6 +43,9 @@ Project contains rspec tests for public rails model methods. Ensure rspec enable
 group :development, :test do
   gem 'rspec-rails', '~> 3.7'
 end
+
+Be sure to kill the server (if running) and run the following command after adding the rspec gem:
+- [T3CC]$ bundle install
 
 To run tests for all models (ex.):
 - [T3CC]$ bundle exec rspec spec/models
