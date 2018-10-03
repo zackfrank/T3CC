@@ -120,7 +120,6 @@ var HomePage = {
       -- or --
       Game type 'hvc' is chosen, difficulty level has been chosen, and names not yet submitted
       */ 
-
       return (this.gameType === 'hvh' || (this.gameType === 'hvc' && this.difficultyLevel)) && !this.namesSubmitted;
     },
     showSymbolsModal: function() {
@@ -141,7 +140,6 @@ var HomePage = {
 
       Names have been submitted, symbols have been chosen, first player has not yet been selected
       */
-
       return this.namesSubmitted && this.symbols && !this.firstPlayerName;
     },
     showStartGameModal: function() {
@@ -203,7 +201,7 @@ var HomePage = {
           this.player1 = response.data.player1;
           this.player2 = response.data.player2;
 
-          // Send message to first player to make the first move
+          // Display message to first player to make the first move
           this.message = this.firstPlayerName + ", make your first move!";
 
           // If player1 starts:
@@ -336,7 +334,7 @@ var HomePage = {
 
       */
 
-      this.moveAllowed = false; // this bar a player from taking a second turn before the next player goes
+      this.moveAllowed = false; // this bars a player from taking a second turn before the next player goes
 
       // ----------- To account for minimax processing time ------------
       if (this.difficultyLevel === "Hard") {
@@ -394,11 +392,9 @@ var HomePage = {
       if (this.computerEndsHvcGame()) {
         this.computerResponse = "Computer: Looks like this game's about to end...";
         setTimeout(function() {
-          console.log("Computer ends game.");
           this.computerResponse = "Computer: " + game.computer_response;
         }.bind(this), 1500);
       } else {
-        console.log("Computer does not end game.");
         this.computerResponse = "Computer: " + game.computer_response;
       }
     },
@@ -473,10 +469,8 @@ var HomePage = {
       (which would mean 'Computer' also made last move) 
 
       */
-
-      if (this.gameType === 'hvc' && (this.game.winner.id === this.game.player2.id || (this.game.tie && this.firstPlayerName === this.player2.name))) {
-        return true;
-      }
+      
+      return (this.gameType === 'hvc' && (this.game.winner.id === this.game.player2.id || (this.game.tie && this.firstPlayerName === this.player2.name)));
     },
     cvcGameplay: function() {
       /* 

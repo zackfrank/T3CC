@@ -184,8 +184,8 @@ class Computer < ApplicationRecord
       scores = []
       moves = []
       board.available_spaces.each do |space|
-        new_board = board.dup # temporary representation of current board
-        new_board[space.to_i] = player_symbol # make potential move on temp board 
+        new_board = board.dup
+        new_board[space.to_i] = player_symbol
         scores << minimax(game, new_board, opposite_player(player_symbol), depth, current_player_symbol) # if game over, store score in array to eventually pass up best score
         moves << space # store move that correlates to stored score above
       end
