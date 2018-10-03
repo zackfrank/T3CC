@@ -170,11 +170,11 @@ class Computer < ApplicationRecord
     # minimax() notes:
     # 
     # Called by make_hard_move():
-    # Recursively runs through every single possible move and counter-move etc. until game
-    # ends to assign every possible move a score and eventually determine the best move
+    # Recursively runs through every single possible move and counter-move etc. until end-state
+    # of game is reached to assign every possible move a score and eventually determine the best move
     # possible for the computer to make - sets @spot to move with best score
-    # 'Best score' is a relative term: highest score if win for current player, lowest
-    # score if win for opposite player
+    # 'Best score' is a relative term: highest score if current player ends game, lowest
+    # score if opposite player ends game
     def minimax(game, board, player_symbol, depth, current_player_symbol)
       if game.game_is_over(board)
         return get_score(board, depth, game, current_player_symbol)
